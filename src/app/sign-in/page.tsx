@@ -169,7 +169,7 @@ const SignINPage = () => {
 
                 {/* Global Footer Navigation Links */}
                 <p className="mt-8 text-xs text-[#0D3834]/80 font-medium">
-                    Don't have an account?{' '}
+                    Don&apos;t have an account?{' '}
                     <Link
                         href="/sign-up"
                         className="text-[#0D3834] hover:underline font-bold transition-all ml-0.5"

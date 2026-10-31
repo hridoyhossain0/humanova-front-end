@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -18,292 +18,379 @@ import { authClient } from '@/lib/auth-client';
 import ThemeToggle from '@/components/ThemeToggle';
 import LOGO from '../../public/LOGO.png';
 
+const navItems = [
+    { name: 'Home', href: '/' },
+    { name: 'Opportunities', href: '/opportunities' },
+    { name: 'Applications', href: '/applications' },
+    { name: 'Resources', href: '/resources' },
+    { name: 'Chat', href: '/chat' },
+];
+
+const userAcess = [
+    { name: 'Create Event', href: '/create-event' },
+    { name: 'Manage Events', href: '/manage-events' },
+    { name: 'Joined Event', href: '/joined-events' },
+
+]
+
 export default function NavBar() {
     const pathname = usePathname();
     const router = useRouter();
 
     const [isOpen, setIsOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
+    const profileRef = useRef<HTMLDivElement>(null);
 
-    // Get actual authentication session from Better Auth
     const { data: session, isPending } = authClient.useSession();
 
     const isLoggedIn = !!session?.user;
 
-    const navItems = [
-        { name: 'Home', href: '/' },
-        { name: 'Opportunities', href: '/opportunities' },
-        { name: 'Applications', href: '/applications' },
-        { name: 'Resources', href: '/resources' },
-        { name: 'Chat', href: '/chat' },
-    ];
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (
+                profileRef.current &&
+                !profileRef.current.contains(event.target as Node)
+            ) {
+                setProfileOpen(false);
+            }
+        }
 
-    // Sign out using Better Auth
+        document.addEventListener('mousedown', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
+    // Close menus when route changes
+    useEffect(() => {
+        setIsOpen(false);
+        setProfileOpen(false);
+    }, [pathname]);
+
+    // Logout
     const handleLogout = async () => {
         try {
             await authClient.signOut();
-
             setProfileOpen(false);
             setIsOpen(false);
-
-            router.push('/');
+            router.replace('/');
             router.refresh();
         } catch (error) {
             console.error('Logout failed:', error);
         }
     };
 
+    // Active route detection
+    const isActive = (href: string) => {
+        if (href === '/') return pathname === '/';
+
+        return pathname === href || pathname.startsWith(`${href}/`);
+    };
+
     return (
-        <>
-            <div className='bg-gradient-to-r from-[#F4F4F3]/90 via-[#FAF9F5]/90 to-[#FFFBF0]/90 dark:from-neutral-950/95 dark:via-neutral-900/95 dark:to-neutral-950/95'>
-                <div className='container mx-auto'>
+        <header className="sticky top-0 z-[100] w-full border-b border-neutral-200/70 bg-[#FAF9F5]/90 shadow-sm backdrop-blur-xl dark:border-neutral-800 dark:bg-neutral-950/90">
 
+            <nav className="container mx-auto flex h-16 items-center justify-between px-4">
 
-                <nav className="fixed inset-x-0 top-0 z-[100] w-full px-3 md:px-4 py-3 bg-[#FAF9F5]/95 dark:bg-neutral-900/95 backdrop-blur-md flex items-center justify-between border-b border-neutral-200/40 dark:border-neutral-700/60 shadow-sm">
-
-                    {/* Brand Logo */}
-                    <Link
-                        href="/"
-                        className="flex items-center space-x-2 group z-50"
-                    >
-                        <div className="relative w-10 h-10">
-                            <Image
-                                src={LOGO}
-                                alt="Humanova Logo"
-                                fill
-                                sizes="40px"
-                                className="object-contain"
-                                priority
-                            />
-                        </div>
-
-                        <span className="font-sans text-xl font-semibold tracking-wide text-neutral-800">
-                            Humanova
-                        </span>
-                    </Link>
-
-                    {/* Desktop Navigation */}
-                    <div className="hidden md:flex items-center space-x-1 bg-white/40 backdrop-blur-md p-1 rounded-full border border-neutral-200/60 shadow-sm">
-
-                        {navItems.map((item) => {
-                            const isActive = pathname === item.href;
-
-                            return (
-                                <Link
-                                    key={item.name}
-                                    href={item.href}
-                                    className={`px-5 py-2 text-sm font-medium rounded-full transition-all duration-200 ${isActive
-                                        ? 'bg-[#121214] text-white shadow-sm'
-                                        : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200/40'
-                                        }`}
-                                >
-                                    {item.name}
-                                </Link>
-                            );
-                        })}
-                    </div>
-
-                    {/* Desktop Authentication */}
-                    <div className="hidden md:flex items-center space-x-3">
-
-                        <ThemeToggle />
-
-                        {isPending ? (
-                            // Session loading
-                            <div className="w-24 h-10 rounded-full bg-neutral-200/50 animate-pulse" />
-                        ) : !isLoggedIn ? (
-                            // Logged Out
-                            <>
-                                <Link
-                                    href="/sign-in"
-                                    className="px-5 py-2 text-sm font-medium text-neutral-600 hover:text-neutral-900 rounded-full hover:bg-neutral-200/40 transition-all"
-                                >
-                                    Sign In
-                                </Link>
-
-                                <Link
-                                    href="/sign-up"
-                                    className="px-5 py-2 text-sm font-medium bg-[#121214] hover:bg-neutral-800 text-white rounded-full shadow-sm transition-all"
-                                >
-                                    Sign Up
-                                </Link>
-                            </>
-                        ) : (
-                            // Logged In
-                            <div className="relative">
-
-                                {/* Profile Button */}
-                                <button
-                                    onClick={() => setProfileOpen(!profileOpen)}
-                                    className="flex items-center gap-2 p-1.5 rounded-full hover:bg-neutral-200/60 transition-all"
-                                    aria-label="Open profile menu"
-                                    aria-expanded={profileOpen}
-                                >
-                                    <div className="w-10 h-10 rounded-full bg-[#121214] text-white flex items-center justify-center overflow-hidden">
-                                        {session?.user?.image ? (
-                                            <Image
-                                                src={session.user.image}
-                                                alt="Profile"
-                                                width={40}
-                                                height={40}
-                                                className="w-full h-full object-cover"
-                                            />
-                                        ) : (
-                                            <UserRound size={21} />
-                                        )}
-                                    </div>
-
-                                    <ChevronDown
-                                        size={16}
-                                        className={`text-neutral-600 transition-transform ${profileOpen ? 'rotate-180' : ''
-                                            }`}
-                                    />
-                                </button>
-
-                                {/* Profile Dropdown */}
-                                {profileOpen && (
-                                    <div className="absolute right-0 top-14 w-56 bg-white rounded-xl shadow-xl border border-neutral-200 p-2">
-
-                                        <div className="px-3 py-3 border-b border-neutral-100">
-                                            <p className="text-sm font-semibold text-neutral-900 truncate">
-                                                {session?.user?.name || 'User'}
-                                            </p>
-
-                                            <p className="text-xs text-neutral-500 truncate">
-                                                {session?.user?.email}
-                                            </p>
-                                        </div>
-
-                                        <button
-                                            onClick={handleLogout}
-                                            className="w-full flex items-center gap-3 px-3 py-2.5 mt-1 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                        >
-                                            <LogOut size={17} />
-                                            Sign Out
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Mobile Menu Toggle */}
-                    <div className="flex items-center gap-2 md:hidden">
-                        <ThemeToggle />
-                        <button
-                        onClick={() => {
-                            setIsOpen(!isOpen);
-                            setProfileOpen(false);
-                        }}
-                        className="md:hidden p-2 text-neutral-700 hover:text-neutral-900 z-50 rounded-full hover:bg-neutral-200/40 transition-colors"
-                        aria-label="Toggle Menu"
-                        aria-expanded={isOpen}
-                    >
-                        {isOpen ? (
-                            <X className="w-6 h-6" />
-                        ) : (
-                            <Menu className="w-6 h-6" />
-                        )}
-                        </button>
-                    </div>
-                </nav>
-
-                {/* Mobile Drawer */}
-                <div
-                    className={`fixed inset-0 z-40 bg-gradient-to-b from-[#F4F4F3] to-[#FFFBF0] pt-24 px-6 md:hidden flex flex-col justify-between pb-8 transition-transform duration-300 ease-in-out ${isOpen
-                        ? 'translate-y-0'
-                        : '-translate-y-full pointer-events-none'
-                        }`}
+                {/* Logo */}
+                <Link
+                    href="/"
+                    prefetch
+                    className="group flex items-center gap-2"
                 >
-
-                    {/* Mobile Navigation Links */}
-                    <div className="flex flex-col space-y-4">
-
-                        {navItems.map((item) => {
-                            const isActive = pathname === item.href;
-
-                            return (
-                                <Link
-                                    key={item.name}
-                                    href={item.href}
-                                    onClick={() => setIsOpen(false)}
-                                    className={`w-full px-6 py-3 text-lg font-medium rounded-full transition-all ${isActive
-                                        ? 'bg-[#121214] text-white shadow-md'
-                                        : 'text-neutral-600 hover:bg-neutral-200/40 hover:text-neutral-900'
-                                        }`}
-                                >
-                                    {item.name}
-                                </Link>
-                            );
-                        })}
+                    <div className="relative h-10 w-10 transition-transform duration-300 group-hover:scale-105">
+                        <Image
+                            src={LOGO}
+                            alt="Humanova Logo"
+                            fill
+                            priority
+                            sizes="40px"
+                            className="object-contain"
+                        />
                     </div>
 
-                    {/* Mobile Authentication */}
-                    <div className="flex flex-col space-y-3 w-full border-t border-neutral-200/60 pt-6">
+                    <span className="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">
+                        Humanova
+                    </span>
+                </Link>
 
-                        {isPending ? (
-                            <div className="h-12 rounded-full bg-neutral-200/50 animate-pulse" />
-                        ) : !isLoggedIn ? (
-                            // Logged Out
-                            <>
-                                <Link
-                                    href="/sign-in"
-                                    onClick={() => setIsOpen(false)}
-                                    className="w-full text-center px-5 py-3 text-base font-medium text-neutral-600 hover:bg-neutral-200/40 rounded-full transition-all"
-                                >
-                                    Sign In
-                                </Link>
+                {/* Desktop Navigation */}
+                <div className="hidden items-center gap-1 rounded-full border border-neutral-200/70 bg-white/60 p-1 shadow-sm md:flex dark:border-neutral-700 dark:bg-neutral-900/60">
 
-                                <Link
-                                    href="/sign-up"
-                                    onClick={() => setIsOpen(false)}
-                                    className="w-full text-center px-5 py-3 text-base font-medium bg-[#121214] text-white rounded-full shadow-md transition-all"
-                                >
-                                    Sign Up
-                                </Link>
-                            </>
-                        ) : (
-                            // Logged In
-                            <>
-                                <div className="flex items-center gap-3 px-4 py-3">
-                                    <div className="w-11 h-11 rounded-full bg-[#121214] text-white flex items-center justify-center overflow-hidden">
-                                        {session?.user?.image ? (
-                                            <Image
-                                                src={session.user.image}
-                                                alt="Profile"
-                                                width={44}
-                                                height={44}
-                                                className="w-full h-full object-cover"
-                                            />
-                                        ) : (
-                                            <UserRound size={22} />
-                                        )}
-                                    </div>
+                    {navItems.map((item) => {
+                        const active = isActive(item.href);
 
-                                    <div className="min-w-0">
-                                        <p className="text-sm font-semibold text-neutral-900 truncate">
-                                            {session?.user?.name || 'User'}
-                                        </p>
+                        return (
+                            <Link
+                                key={item.href}
+                                href={item.href}
+                                prefetch
+                                aria-current={active ? 'page' : undefined}
+                                className={`
+                                    relative rounded-full px-4 py-2
+                                    text-sm font-medium
+                                    transition-all duration-200 ease-out
+                                    active:scale-95
+                                    ${active
+                                        ? 'bg-neutral-900 text-white shadow-md dark:bg-white dark:text-neutral-900'
+                                        : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-white'
+                                    }
+                                `}
+                            >
+                                {item.name}
+                            </Link>
+                        );
+                    })}
+                </div>
 
-                                        <p className="text-xs text-neutral-500 truncate">
-                                            {session?.user?.email}
-                                        </p>
-                                    </div>
+                {/* Desktop Actions */}
+                <div className="hidden items-center gap-3 md:flex">
+
+                    <ThemeToggle />
+
+                    {isPending ? (
+                        <div className="h-10 w-24 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-800" />
+                    ) : !isLoggedIn ? (
+                        <>
+                            <Link
+                                href="/sign-in"
+                                className="rounded-full px-4 py-2 text-sm font-medium text-neutral-700 transition hover:bg-neutral-200/60 dark:text-neutral-200 dark:hover:bg-neutral-800"
+                            >
+                                Sign In
+                            </Link>
+
+                            <Link
+                                href="/sign-up"
+                                className="rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-neutral-700 active:scale-95 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
+                            >
+                                Get Started
+                            </Link>
+                        </>
+                    ) : (
+                        <div className="relative" ref={profileRef}>
+
+                            <button
+                                onClick={() => setProfileOpen((prev) => !prev)}
+                                aria-label="Open profile menu"
+                                aria-expanded={profileOpen}
+                                className="flex items-center gap-2 rounded-full p-1 transition hover:bg-neutral-200/70 dark:hover:bg-neutral-800"
+                            >
+                                <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-neutral-900 text-white dark:bg-white dark:text-neutral-900">
+                                    {session.user.image ? (
+                                        <Image
+                                            src={session.user.image}
+                                            alt="Profile"
+                                            width={36}
+                                            height={36}
+                                            className="h-full w-full object-cover"
+                                        />
+                                    ) : (
+                                        <UserRound size={20} />
+                                    )}
                                 </div>
+
+                                <ChevronDown
+                                    size={16}
+                                    className={`transition-transform duration-200 ${profileOpen ? 'rotate-180' : ''
+                                        }`}
+                                />
+                            </button>
+
+                            {/* Dropdown */}
+                            <div
+                                className={`absolute right-0 top-12 w-60 origin-top-right rounded-xl border border-neutral-200 bg-white p-2 shadow-xl transition-all duration-200 dark:border-neutral-700 dark:bg-neutral-900 ${profileOpen
+                                    ? 'visible translate-y-0 scale-100 opacity-100'
+                                    : 'invisible -translate-y-2 scale-95 opacity-0'
+                                    }`}
+                            >
+                                <div className="border-b border-neutral-100 px-3 py-3 dark:border-neutral-800">
+                                    <p className="truncate text-sm font-semibold text-neutral-900 dark:text-white">
+                                        {session.user.name || 'User'}
+                                    </p>
+
+                                    <p className="truncate text-xs text-neutral-500">
+                                        {session.user.email}
+                                    </p>
+                                </div>
+
+
+                                {userAcess.map((user) => {
+                                    const active = isActive(user.href);
+
+                                    return (
+                                        <Link
+                                            key={user.href}
+                                            href={user.href}
+                                            prefetch
+                                            aria-current={active ? 'page' : undefined}
+                                            className={`
+                                    mt-1 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium
+                                    ${active
+                                                    ? 'bg-neutral-900 text-white shadow-md dark:bg-white dark:text-neutral-900'
+                                                    : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-white'
+                                                }
+                                `}
+                                        >
+                                            {user.name}
+                                        </Link>
+                                    );
+                                })}
 
                                 <button
                                     onClick={handleLogout}
-                                    className="w-full flex items-center justify-center gap-2 px-5 py-3 text-base font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-full transition-all"
+                                    className="mt-1 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50 active:scale-[0.98] dark:hover:bg-red-950/30"
                                 >
-                                    <LogOut size={18} />
+                                    <LogOut size={17} />
                                     Sign Out
                                 </button>
-                            </>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {/* Mobile Actions */}
+                <div className="flex items-center gap-2 md:hidden">
+                    <ThemeToggle />
+
+                    <button
+                        onClick={() => setIsOpen((prev) => !prev)}
+                        aria-label={isOpen ? 'Close menu' : 'Open menu'}
+                        aria-expanded={isOpen}
+                        className="rounded-full p-2 text-neutral-800 transition hover:bg-neutral-200 active:scale-90 dark:text-white dark:hover:bg-neutral-800"
+                    >
+                        {isOpen ? (
+                            <X size={23} />
+                        ) : (
+                            <Menu size={23} />
                         )}
-                    </div>
+                    </button>
+                </div>
+            </nav>
+
+            {/* Mobile Drawer */}
+            <div
+                className={`fixed inset-x-0 top-16 z-40 flex h-[calc(100dvh-4rem)] flex-col justify-between overflow-y-auto bg-[#FAF9F5] px-5 pb-8 pt-6 transition-all duration-300 ease-in-out md:hidden dark:bg-neutral-950 ${isOpen
+                    ? 'visible translate-y-0 opacity-100'
+                    : 'invisible -translate-y-3 opacity-0 pointer-events-none'
+                    }`}
+            >
+
+                {/* Mobile Links */}
+                <div className="flex flex-col gap-2">
+                    {navItems.map((item) => {
+                        const active = isActive(item.href);
+
+                        return (
+                            <Link
+                                key={item.href}
+                                href={item.href}
+                                prefetch
+                                onClick={() => setIsOpen(false)}
+                                aria-current={active ? 'page' : undefined}
+                                className={`flex items-center justify-between rounded-xl px-5 py-4 text-base font-medium transition-all duration-200 active:scale-[0.98] ${active
+                                    ? 'bg-neutral-900 text-white shadow-md dark:bg-white dark:text-neutral-900'
+                                    : 'text-neutral-700 hover:bg-neutral-200/60 dark:text-neutral-300 dark:hover:bg-neutral-800'
+                                    }`}
+                            >
+                                {item.name}
+
+                                {active && (
+                                    <span className="h-2 w-2 rounded-full bg-white dark:bg-neutral-900" />
+                                )}
+                            </Link>
+                        );
+                    })}
+                </div>
+
+                {/* Mobile Authentication */}
+                <div className="border-t border-neutral-200 pt-5 dark:border-neutral-800">
+
+                    {isPending ? (
+                        <div className="h-12 animate-pulse rounded-xl bg-neutral-200 dark:bg-neutral-800" />
+                    ) : !isLoggedIn ? (
+                        <div className="flex flex-col gap-3">
+                            <Link
+                                href="/sign-in"
+                                onClick={() => setIsOpen(false)}
+                                className="rounded-full border border-neutral-300 py-3 text-center font-medium text-neutral-800 transition hover:bg-neutral-100 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800"
+                            >
+                                Sign In
+                            </Link>
+
+                            <Link
+                                href="/sign-up"
+                                onClick={() => setIsOpen(false)}
+                                className="rounded-full bg-neutral-900 py-3 text-center font-semibold text-white transition hover:bg-neutral-700 active:scale-95 dark:bg-white dark:text-neutral-900"
+                            >
+                                Get Started
+                            </Link>
+                        </div>
+                    ) : (
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-3 px-2">
+                                <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-neutral-900 text-white dark:bg-white dark:text-neutral-900">
+                                    {session.user.image ? (
+                                        <Image
+                                            src={session.user.image}
+                                            alt="Profile"
+                                            width={44}
+                                            height={44}
+                                            className="h-full w-full object-cover"
+                                        />
+                                    ) : (
+                                        <UserRound size={22} />
+                                    )}
+                                </div>
+
+                                <div className="min-w-0">
+                                    <p className="truncate text-sm font-semibold text-neutral-900 dark:text-white">
+                                        {session.user.name || 'User'}
+                                    </p>
+                                    <p className="truncate text-xs text-neutral-500">
+                                        {session.user.email}
+                                    </p>
+                                </div>
+                            </div>
+
+                            
+
+
+                            {userAcess.map((user) => {
+                                const active = isActive(user.href);
+
+                                return (
+                                    <Link
+                                        key={user.href}
+                                        href={user.href}
+                                        prefetch
+                                        aria-current={active ? 'page' : undefined}
+                                        className={`
+                                    flex w-full items-center justify-center gap-2 rounded-full bg-red-50 py-3 font-medium
+                                    ${active
+                                                ? 'bg-neutral-900 text-white shadow-md dark:bg-white dark:text-neutral-900'
+                                                : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-white'
+                                            }
+                                `}
+                                    >
+                                        {user.name}
+                                    </Link>
+                                );
+                            })}
+
+
+                            <button
+                                onClick={handleLogout}
+                                className="flex w-full items-center justify-center gap-2 rounded-full bg-red-50 py-3 font-medium text-red-600 transition hover:bg-red-100 active:scale-[0.98] dark:bg-red-950/30 dark:hover:bg-red-950/50"
+                            >
+                                <LogOut size={18} />
+                                Sign Out
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
-            </div>
-        </>
+        </header>
     );
 }

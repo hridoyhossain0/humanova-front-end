@@ -32,6 +32,7 @@ const eventTypes = [
 export default function CreateEventPage() {
     const router = useRouter();
 
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
     const { data: session, isPending } = authClient.useSession();
 
     const [loading, setLoading] = useState(false);
@@ -99,7 +100,7 @@ export default function CreateEventPage() {
         try {
             setLoading(true);
 
-            const response = await fetch('/api/events', {
+            const response = await fetch(`${baseUrl}/api/events`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

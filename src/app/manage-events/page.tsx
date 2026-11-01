@@ -27,6 +27,27 @@ import EventsCard from '@/components/events/EventsCard';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+// Local event shape returned by the manage-events API.
+// Declared here so it does not resolve to the DOM's global `Event`.
+type Event = {
+    _id: string;
+    title: string;
+    location: string;
+    description: string;
+    eventType: string;
+    imageUrl?: string;
+    eventDate?: string;
+    form?: {
+        title?: string;
+        description?: string;
+        eventType?: string;
+        imageUrl?: string;
+        location?: string;
+        eventDate?: string;
+        _id?: string;
+    };
+};
+
 type ApiResponse = {
     success?: boolean;
     message?: string;
@@ -355,10 +376,24 @@ export default function ManageEventPage() {
                 ) : filteredEvents.length > 0 ? (
 
                     /* EVENTS GRID */
-                    <EventsCard
-                        events={filteredEvents}
-                       key={filteredEvents}
-                    />
+                    <div className="grid grid-cols-1 gap-7 sm:grid-cols-2 xl:grid-cols-3">
+                        {filteredEvents.map((event) => (
+                            <EventsCard
+                                key={event._id}
+                                event={{
+                                    _id: event._id,
+                                    form: {
+                                        title: event.title,
+                                        description: event.description,
+                                        eventType: event.eventType,
+                                        imageUrl: event.imageUrl ?? "",
+                                        location: event.location,
+                                        eventDate: event.eventDate ?? "",
+                                    },
+                                }}
+                            />
+                        ))}
+                    </div>
 
                 ) : (
 

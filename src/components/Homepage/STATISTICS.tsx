@@ -1,14 +1,55 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import {
     CalendarDays,
-   
     SlidersHorizontal,
-  
     PartyPopper,
+} from "lucide-react";
 
-} from 'lucide-react';
+type EventDetails = {
+    eventDate?: string;
+    eventType?: string;
+};
 
+type EventRecord = EventDetails & {
+    form?: EventDetails;
+};
 
-const STATISTICS = ({events}) => {
+type StatisticsProps = {
+    events?: EventRecord[];
+};
+
+const STATISTICS = ({ events = [] }: StatisticsProps) => {
+    // Events created by this app store their display data inside `form`.
+    // Supporting both shapes keeps these counts usable across all event lists.
+    const eventDetails = events.map((event) => event.form ?? event);
+    const [currentTime, setCurrentTime] = useState<number | null>(null);
+
+    useEffect(() => {
+        const timer = window.setTimeout(() => {
+            setCurrentTime(Date.now());
+        }, 0);
+
+        return () => window.clearTimeout(timer);
+    }, []);
+
+    const upcomingEvents = eventDetails.filter((event) => {
+        if (!event.eventDate) return false;
+
+        const eventDate = new Date(event.eventDate);
+        return (
+            !Number.isNaN(eventDate.getTime()) &&
+            (currentTime === null || eventDate.getTime() >= currentTime)
+        );
+    });
+
+    const categoryCount = new Set(
+        eventDetails
+            .map((event) => event.eventType?.trim())
+            .filter((eventType): eventType is string => Boolean(eventType))
+    ).size;
+
     return (
         <div>
             <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -20,7 +61,7 @@ const STATISTICS = ({events}) => {
                                 Total Events
                             </p>
                             <h2 className="mt-2 text-3xl font-black text-gray-900">
-                                {events.length}
+                                {eventDetails.length}
                             </h2>
                         </div>
 
@@ -37,10 +78,7 @@ const STATISTICS = ({events}) => {
                                 Upcoming Events
                             </p>
                             <h2 className="mt-2 text-3xl font-black text-emerald-600">
-                                {events.filter(
-                                    (event) =>
-                                        new Date(event.eventDate) >= new Date()
-                                ).length}
+                                {upcomingEvents.length}
                             </h2>
                         </div>
 
@@ -57,7 +95,7 @@ const STATISTICS = ({events}) => {
                                 Categories
                             </p>
                             <h2 className="mt-2 text-3xl font-black text-orange-500">
-                                {categories.length - 1}
+                                {categoryCount}
                             </h2>
                         </div>
 

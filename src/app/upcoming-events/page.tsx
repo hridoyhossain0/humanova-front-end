@@ -2,7 +2,6 @@ import React from "react";
 import {
     Calendar,
     PlusCircle,
-    Search,
     Layers,
     Heart,
     Trash2,
@@ -14,7 +13,7 @@ import {
     MoreHorizontal,
 } from "lucide-react";
 
-import EventsCard from "@/components/events/EventsCard";
+import EventFilters from "@/components/events/EventFilters";
 import Link from "next/link";
 import { connection } from "next/server";
 
@@ -240,192 +239,7 @@ export default async function UpcomingEventsPage() {
                 </div>
 
 
-                {/* FILTER */}
-
-                <div
-                    className="
-                        mt-12
-                        border-t
-                        border-slate-200/60
-                        pt-8
-                        dark:border-slate-800
-                    "
-                >
-
-                    <div
-                        className="
-                            flex
-                            flex-col
-                            gap-6
-                            lg:flex-row
-                            lg:items-center
-                            lg:justify-between
-                        "
-                    >
-
-                        {/* CATEGORY */}
-
-                        <div className="min-w-0 flex-1 overflow-hidden">
-
-                            <div
-                                className="
-                                    flex
-                                    gap-2.5
-                                    overflow-x-auto
-                                    pb-2
-                                    scrollbar-thin
-                                    scrollbar-thumb-slate-300
-                                    scrollbar-track-transparent
-                                    dark:scrollbar-thumb-slate-700
-                                "
-                            >
-
-                                {categories.map(
-                                    (category) => (
-                                        <button
-                                            key={
-                                                category.name
-                                            }
-                                            type="button"
-                                            className={`
-                                                inline-flex
-                                                shrink-0
-                                                items-center
-                                                gap-2
-                                                whitespace-nowrap
-                                                rounded-xl
-                                                px-4
-                                                py-2.5
-                                                text-xs
-                                                font-bold
-                                                transition-all
-                                                duration-200
-                                                hover:scale-[1.02]
-                                                hover:shadow-sm
-                                                ${category.color}
-                                            `}
-                                        >
-                                            {category.icon}
-
-                                            <span>
-                                                {
-                                                    category.name
-                                                }
-                                            </span>
-                                        </button>
-                                    )
-                                )}
-
-                            </div>
-
-                        </div>
-
-
-                        {/* SEARCH */}
-
-                        <div
-                            className="
-                                relative
-                                w-full
-                                max-w-sm
-                                lg:w-80
-                                lg:shrink-0
-                            "
-                        >
-
-                            <span
-                                className="
-                                    pointer-events-none
-                                    absolute
-                                    inset-y-0
-                                    left-0
-                                    flex
-                                    items-center
-                                    pl-3.5
-                                    text-slate-400
-                                "
-                            >
-                                <Search size={18} />
-                            </span>
-
-                            <input
-                                type="text"
-                                placeholder="Search events or areas..."
-                                className="
-                                    w-full
-                                    rounded-2xl
-                                    border
-                                    border-slate-200
-                                    bg-white
-                                    py-3
-                                    pl-11
-                                    pr-4
-                                    text-sm
-                                    font-medium
-                                    text-slate-800
-                                    placeholder-slate-400
-                                    outline-none
-                                    transition-all
-                                    duration-200
-                                    focus:border-indigo-500
-                                    focus:ring-2
-                                    focus:ring-indigo-100
-                                    dark:border-slate-800
-                                    dark:bg-slate-900
-                                    dark:text-slate-100
-                                    dark:focus:ring-indigo-950
-                                "
-                            />
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            {/* EVENTS */}
-
-            <div
-                className="
-                    mx-auto
-                    mt-10
-                    grid
-                    max-w-7xl
-                    gap-6
-                    sm:grid-cols-2
-                    lg:grid-cols-3
-                "
-            >
-
-                {data.length > 0 ? (
-
-                    data.map((event) => (
-                        <EventsCard
-                            key={event._id}
-                            event={event}
-                        />
-                    ))
-
-                ) : (
-
-                    <div className="col-span-full py-20 text-center">
-
-                        <p className="text-lg font-semibold text-slate-600 dark:text-slate-300">
-                            No upcoming events found.
-                        </p>
-
-                        <p className="mt-2 text-sm text-slate-400">
-                            Create an event and bring your
-                            community together.
-                        </p>
-
-                    </div>
-
-                )}
-
+                <EventFilters categories={categories} events={data} />
             </div>
 
         </main>

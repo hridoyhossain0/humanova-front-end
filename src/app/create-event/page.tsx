@@ -234,7 +234,10 @@ export default function CreateEventPage() {
             // Success
             setSuccess(true);
 
-            setForm(initialForm);
+            setForm((current) => ({
+                ...current,
+                ...initialForm,
+            }));
 
             // The upcoming-events page fetches with `no-store`, so this
             // navigation loads the event that was just created.
@@ -306,24 +309,24 @@ export default function CreateEventPage() {
     }
 
     return (
-        <main className="min-h-screen bg-background px-6 py-12">
-            <div className="mx-auto max-w-2xl">
+        <main className="min-h-screen bg-gradient-to-b from-sky-50/70 via-background to-background px-4 py-10 sm:px-6 sm:py-14">
+            <div className="mx-auto max-w-3xl">
 
                 {/* Back */}
                 <Link
                     href="/upcoming-events"
-                    className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground transition hover:text-foreground"
+                    className="mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-background/80 px-4 py-2 text-sm font-medium text-muted-foreground shadow-sm transition hover:border-sky-200 hover:text-sky-700 hover:shadow dark:hover:border-sky-900 dark:hover:text-sky-300"
                 >
                     <ArrowLeft size={16} />
                     Back to Upcoming Events
                 </Link>
 
                 {/* Page heading */}
-                <h1 className="text-4xl font-light tracking-tight text-foreground md:text-5xl">
+                <h1 className="text-4xl font-bold tracking-tight text-foreground md:text-5xl">
                     Create New Event
                 </h1>
 
-                <p className="mt-3 text-muted-foreground">
+                <p className="mt-3 max-w-xl text-base leading-7 text-muted-foreground">
                     Create a community event and
                     bring people together.
                 </p>
@@ -331,14 +334,14 @@ export default function CreateEventPage() {
                 {/* Form */}
                 <form
                     onSubmit={handleSubmit}
-                    className="mt-10 rounded-sm border border-border bg-white p-8 shadow-sm"
+                    className="mt-10 overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xl shadow-slate-200/40 dark:border-slate-800 dark:bg-slate-950 dark:shadow-none sm:p-9"
                 >
-                    <div className="grid gap-5">
+                    <div className="grid gap-6">
 
                         {/* Event Title */}
                         <div className="grid gap-2">
-                            <Label htmlFor="title">
-                                <span className="flex items-center gap-2">
+                            <Label htmlFor="title" className="text-sm font-semibold">
+                                <span className="flex items-center gap-2 text-slate-700 dark:text-slate-200">
                                     <Type size={16} />
                                     Event Title
                                 </span>
@@ -359,13 +362,14 @@ export default function CreateEventPage() {
                                 minLength={3}
                                 maxLength={100}
                                 required
+                                className="h-12 rounded-xl border-slate-200 bg-slate-50/50 px-4 shadow-sm transition focus-visible:bg-white dark:border-slate-800 dark:bg-slate-900/50"
                             />
                         </div>
 
                         {/* Event Type */}
                         <div className="grid gap-2">
-                            <Label>
-                                <span className="flex items-center gap-2">
+                            <Label className="text-sm font-semibold">
+                                <span className="flex items-center gap-2 text-slate-700 dark:text-slate-200">
                                     <HeartHandshake size={16} />
                                     Event Type
                                 </span>
@@ -376,11 +380,11 @@ export default function CreateEventPage() {
                                 onValueChange={(value) =>
                                     update(
                                         "eventType",
-                                        value
+                                        value ?? ""
                                     )
                                 }
                             >
-                                <SelectTrigger className="w-full">
+                                <SelectTrigger className="h-12 w-full rounded-xl border-slate-200 bg-slate-50/50 px-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
                                     <SelectValue placeholder="Select event category" />
                                 </SelectTrigger>
 
@@ -401,8 +405,8 @@ export default function CreateEventPage() {
 
                         {/* Description */}
                         <div className="grid gap-2">
-                            <Label htmlFor="description">
-                                <span className="flex items-center gap-2">
+                            <Label htmlFor="description" className="text-sm font-semibold">
+                                <span className="flex items-center gap-2 text-slate-700 dark:text-slate-200">
                                     <FileText size={16} />
                                     Event Description
                                 </span>
@@ -412,7 +416,7 @@ export default function CreateEventPage() {
                                 id="description"
                                 name="description"
                                 placeholder="Describe your event, its purpose, activities and how people can participate..."
-                                className="min-h-36"
+                                className="min-h-36 rounded-xl border-slate-200 bg-slate-50/50 p-4 shadow-sm transition focus-visible:bg-white dark:border-slate-800 dark:bg-slate-900/50"
                                 value={form.description}
                                 onChange={(event) =>
                                     update(
@@ -433,8 +437,8 @@ export default function CreateEventPage() {
 
                         {/* Image URL */}
                         <div className="grid gap-2">
-                            <Label htmlFor="imageUrl">
-                                <span className="flex items-center gap-2">
+                            <Label htmlFor="imageUrl" className="text-sm font-semibold">
+                                <span className="flex items-center gap-2 text-slate-700 dark:text-slate-200">
                                     <ImageIcon size={16} />
                                     Thumbnail Image URL
                                 </span>
@@ -453,11 +457,12 @@ export default function CreateEventPage() {
                                     )
                                 }
                                 required
+                                className="h-12 rounded-xl border-slate-200 bg-slate-50/50 px-4 shadow-sm transition focus-visible:bg-white dark:border-slate-800 dark:bg-slate-900/50"
                             />
 
                             {/* Image Preview */}
                             {form.imageUrl && (
-                                <div className="mt-2 overflow-hidden rounded-sm border border-border">
+                                <div className="mt-2 overflow-hidden rounded-2xl border border-slate-200 shadow-sm dark:border-slate-800">
                                     <Image
                                         src={form.imageUrl}
                                         alt="Event preview"
@@ -475,8 +480,8 @@ export default function CreateEventPage() {
 
                         {/* Location */}
                         <div className="grid gap-2">
-                            <Label htmlFor="location">
-                                <span className="flex items-center gap-2">
+                            <Label htmlFor="location" className="text-sm font-semibold">
+                                <span className="flex items-center gap-2 text-slate-700 dark:text-slate-200">
                                     <MapPin size={16} />
                                     Event Location
                                 </span>
@@ -496,13 +501,14 @@ export default function CreateEventPage() {
                                 }
                                 maxLength={200}
                                 required
+                                className="h-12 rounded-xl border-slate-200 bg-slate-50/50 px-4 shadow-sm transition focus-visible:bg-white dark:border-slate-800 dark:bg-slate-900/50"
                             />
                         </div>
 
                         {/* Event Date */}
                         <div className="grid gap-2">
-                            <Label htmlFor="eventDate">
-                                <span className="flex items-center gap-2">
+                            <Label htmlFor="eventDate" className="text-sm font-semibold">
+                                <span className="flex items-center gap-2 text-slate-700 dark:text-slate-200">
                                     <CalendarDays size={16} />
                                     Event Date
                                 </span>
@@ -521,6 +527,7 @@ export default function CreateEventPage() {
                                     )
                                 }
                                 required
+                                className="h-12 rounded-xl border-slate-200 bg-slate-50/50 px-4 shadow-sm transition focus-visible:bg-white dark:border-slate-800 dark:bg-slate-900/50"
                             />
 
                             <p className="text-xs text-muted-foreground">
@@ -530,7 +537,7 @@ export default function CreateEventPage() {
 
                         {/* Created By */}
                         <div className="grid gap-2">
-                            <Label htmlFor="creatorEmail">
+                            <Label htmlFor="creatorEmail" className="text-sm font-semibold">
                                 Created By
                             </Label>
 
@@ -541,7 +548,7 @@ export default function CreateEventPage() {
                                     session.user.email
                                 }
                                 readOnly
-                                className="cursor-not-allowed bg-muted"
+                                className="h-12 cursor-not-allowed rounded-xl border-slate-200 bg-slate-100 px-4 text-slate-500 dark:border-slate-800 dark:bg-slate-900"
                             />
 
                             <p className="text-xs text-muted-foreground">
@@ -552,7 +559,7 @@ export default function CreateEventPage() {
 
                         {/* Error */}
                         {error && (
-                            <div className="flex items-start gap-3 rounded-sm border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
+                            <div className="flex items-start gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
                                 <AlertCircle
                                     size={18}
                                     className="mt-0.5 shrink-0"
@@ -564,7 +571,7 @@ export default function CreateEventPage() {
 
                         {/* Success */}
                         {success && (
-                            <div className="flex items-start gap-3 rounded-sm border border-emerald-500/30 bg-emerald-500/5 p-4 text-sm text-emerald-600">
+                            <div className="flex items-start gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4 text-sm text-emerald-600">
                                 <CheckCircle2
                                     size={20}
                                     className="mt-0.5 shrink-0"
@@ -585,14 +592,14 @@ export default function CreateEventPage() {
                     </div>
 
                     {/* Actions */}
-                    <div className="mt-8 flex justify-end gap-3">
+                    <div className="mt-8 flex flex-col-reverse gap-3 border-t border-slate-100 pt-6 sm:flex-row sm:justify-end dark:border-slate-800">
                         <Button
                             type="button"
                             variant="outline"
                             
-                            className="border-destructive/30 bg-background text-destructive hover:bg-destructive/5 hover:text-destructive"
+                            className="h-11 rounded-xl border-destructive/30 bg-background px-5 text-destructive hover:bg-destructive/5 hover:text-destructive"
                         >
-                            <Link href="/upcoming-events">
+                            <Link href="/upcoming-events" className="flex gap-1">
                                 <ArrowLeft />
                                 Cancel
                             </Link>
@@ -603,7 +610,7 @@ export default function CreateEventPage() {
                             disabled={
                                 loading || success
                             }
-                            className="bg-[#00A8E8] text-white hover:bg-[#0095d1]"
+                            className="h-11 rounded-xl bg-[#00A8E8] px-6 font-semibold text-white shadow-lg shadow-sky-500/20 transition hover:bg-[#0095d1] hover:shadow-sky-500/30"
                         >
                             {loading ? (
                                 <>
@@ -626,7 +633,7 @@ export default function CreateEventPage() {
                 </form>
 
                 {/* Footer */}
-                <p className="mt-6 text-center text-xs text-muted-foreground">
+                <p className="mt-7 text-center text-xs leading-6 text-muted-foreground">
                     Every small action creates a
                     bigger impact. Thank you for
                     making a difference!

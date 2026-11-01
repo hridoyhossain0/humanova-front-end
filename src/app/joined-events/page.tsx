@@ -1,10 +1,349 @@
-import React from 'react';
+"use client";
+
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import {
+    CalendarDays,
+    MapPin,
+    ArrowRight,
+    Loader2,
+    HeartHandshake,
+} from "lucide-react";
+
+import { authClient } from "@/lib/auth-client";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
+
+interface JoinedEvent {
+    _id: string;
+    username: string;
+    email: string;
+
+    form?: {
+        username?: string;
+        email?: string;
+        title?: string;
+        description?: string;
+        eventType?: string;
+        imageUrl?: string;
+        location?: string;
+        eventDate?: string;
+        createdAt?: string;
+        _id?: string;
+    };
+
+    registeringDate?: string;
+}
 
 const JoinedEventsPage = () => {
+    const { data: session, isPending: sessionLoading } =
+        authClient.useSession();
+
+    const [joinedEvents, setJoinedEvents] = useState<JoinedEvent[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        if (sessionLoading) return;
+
+        if (!session?.user) {
+            setLoading(false);
+            return;
+        }
+
+        const fetchJoinedEvents = async () => {
+            try {
+                setLoading(true);
+                setError("");
+
+                const token = await getTokenFromClient();
+
+                if (!token) {
+                    throw new Error("Authentication token not found.");
+                }
+
+                const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+                if (!apiUrl) {
+                    throw new Error(
+                        "NEXT_PUBLIC_API_URL is not configured."
+                    );
+                }
+
+                const res = await fetch(`${apiUrl}/joined`, {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                const result = await res.json();
+
+                console.log("Joined API:", result);
+
+                if (!res.ok) {
+                    throw new Error(
+                        result.message ||
+                        "Failed to load joined events."
+                    );
+                }
+
+                // API can return array OR { data: [] }
+                const events: JoinedEvent[] = Array.isArray(result)
+                    ? result
+                    : Array.isArray(result.data)
+                        ? result.data
+                        : [];
+
+                // Remove invalid records
+                const validEvents = events.filter(
+                    (item) => item && item.form
+                );
+
+                setJoinedEvents(validEvents);
+            } catch (error) {
+                console.error("Joined Events Error:", error);
+
+                setError(
+                    error instanceof Error
+                        ? error.message
+                        : "Something went wrong."
+                );
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchJoinedEvents();
+    }, [session, sessionLoading]);
+
+    // Loading
+    if (sessionLoading || loading) {
+        return (
+            <main className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-950">
+                <div className="flex items-center gap-3 text-slate-600 dark:text-slate-300">
+                    <Loader2
+                        size={25}
+                        className="animate-spin"
+                    />
+                    Loading joined events...
+                </div>
+            </main>
+        );
+    }
+
+    // Login required
+    if (!session?.user) {
+        return (
+            <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6 dark:bg-slate-950">
+                <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                    <HeartHandshake
+                        size={45}
+                        className="mx-auto text-indigo-600"
+                    />
+
+                    <h1 className="mt-4 text-2xl font-bold text-slate-900 dark:text-white">
+                        Login Required
+                    </h1>
+
+                    <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+                        Please login to see your joined events.
+                    </p>
+
+                    <Link
+                        href="/sign-in"
+                        className="mt-6 inline-flex rounded-xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-indigo-700"
+                    >
+                        Login Now
+                    </Link>
+                </div>
+            </main>
+        );
+    }
+
     return (
-        <div>
-            
-        </div>
+        <main className="min-h-screen bg-slate-50 px-4 py-10 dark:bg-slate-950 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-7xl">
+
+                {/* Header */}
+                <div className="mb-10">
+                    <div className="inline-flex items-center gap-2 rounded-xl bg-indigo-50 px-3 py-1.5 text-xs font-bold text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400">
+                        <HeartHandshake size={14} />
+                        My Community Activities
+                    </div>
+
+                    <h1 className="mt-4 text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+                        Joined Events
+                    </h1>
+
+                    <p className="mt-3 text-slate-500 dark:text-slate-400">
+                        Events you have joined and plan to participate in.
+                    </p>
+                </div>
+
+                {/* Error */}
+                {error && (
+                    <div className="mb-8 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-600">
+                        {error}
+                    </div>
+                )}
+
+                {/* Empty */}
+                {!error && joinedEvents.length === 0 && (
+                    <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center dark:border-slate-800 dark:bg-slate-900">
+                        <HeartHandshake
+                            size={45}
+                            className="mx-auto text-slate-400"
+                        />
+
+                        <h2 className="mt-4 text-xl font-bold text-slate-800 dark:text-white">
+                            No Joined Events
+                        </h2>
+
+                        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+                            You haven't joined any events yet.
+                        </p>
+
+                        <Link
+                            href="/upcoming-events"
+                            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-indigo-700"
+                        >
+                            Browse Events
+                            <ArrowRight size={16} />
+                        </Link>
+                    </div>
+                )}
+
+                {/* Cards */}
+                {joinedEvents.length > 0 && (
+                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                        {joinedEvents.map((joined) => {
+                            const event = joined.form;
+
+                            // Extra safety
+                            if (!event) return null;
+
+                            return (
+                                <article
+                                    key={joined._id}
+                                    className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900"
+                                >
+                                    {/* Image */}
+                                    <div className="relative h-52 w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+                                        {event.imageUrl ? (
+                                            <Image
+                                                src={event.imageUrl}
+                                                alt={
+                                                    event.title ||
+                                                    "Joined event"
+                                                }
+                                                fill
+                                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                                className="object-cover"
+                                            />
+                                        ) : (
+                                            <div className="flex h-full items-center justify-center text-sm text-slate-400">
+                                                No image available
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Content */}
+                                    <div className="p-5">
+
+                                        {/* Type */}
+                                        <span className="inline-flex rounded-lg bg-indigo-50 px-3 py-1 text-xs font-bold text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400">
+                                            {event.eventType ||
+                                                "Community Service"}
+                                        </span>
+
+                                        {/* Title */}
+                                        <h2 className="mt-3 line-clamp-2 text-xl font-bold text-slate-900 dark:text-white">
+                                            {event.title ||
+                                                "Untitled Event"}
+                                        </h2>
+
+                                        {/* Description */}
+                                        <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                                            {event.description ||
+                                                "No description available."}
+                                        </p>
+
+                                        {/* Location */}
+                                        <div className="mt-4 flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                                            <MapPin
+                                                size={16}
+                                                className="shrink-0 text-indigo-500"
+                                            />
+
+                                            <span className="line-clamp-1">
+                                                {event.location ||
+                                                    "Location not specified"}
+                                            </span>
+                                        </div>
+
+                                        {/* Date */}
+                                        <div className="mt-2 flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                                            <CalendarDays
+                                                size={16}
+                                                className="shrink-0 text-indigo-500"
+                                            />
+
+                                            <span>
+                                                {event.eventDate
+                                                    ? new Date(
+                                                        event.eventDate
+                                                    ).toLocaleDateString(
+                                                        "en-US",
+                                                        {
+                                                            year: "numeric",
+                                                            month: "short",
+                                                            day: "numeric",
+                                                        }
+                                                    )
+                                                    : "Date not specified"}
+                                            </span>
+                                        </div>
+
+                                        {/* Joined */}
+                                        <div className="mt-5 flex items-center justify-between border-t border-slate-100 pt-4 dark:border-slate-800">
+                                            <span className="text-xs font-semibold text-emerald-600">
+                                                ✓ Joined
+                                            </span>
+
+                                            <span className="text-xs text-slate-400">
+                                                {joined.registeringDate
+                                                    ? new Date(
+                                                        joined.registeringDate
+                                                    ).toLocaleDateString(
+                                                        "en-US",
+                                                        {
+                                                            month: "short",
+                                                            day: "numeric",
+                                                            year: "numeric",
+                                                        }
+                                                    )
+                                                    : ""}
+                                            </span>
+                                        </div>
+
+                                        {/* View Event */}
+                                        <Link
+                                            href={`/upcoming-events/${event._id || joined._id
+                                                }`}
+                                            className="mt-4 flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-indigo-700"
+                                        >
+                                            View Event
+                                            <ArrowRight size={16} />
+                                        </Link>
+                                    </div>
+                                </article>
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
+        </main>
     );
 };
 

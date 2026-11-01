@@ -297,7 +297,7 @@ export default function CreateEventPage() {
                     </p>
 
                     <Button
-                        asChild
+                        
                         className="mt-6 bg-[#00A8E8] text-white hover:bg-[#0095d1]"
                     >
                         <Link href="/sign-in">

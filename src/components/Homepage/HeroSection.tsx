@@ -86,7 +86,7 @@ export default function HeroSection() {
                     {/* CTA Buttons */}
                     <div className="mt-9 flex flex-wrap gap-4">
                         <Link
-                            href="/events"
+                            href="/upcoming-events"
                             className="group inline-flex items-center gap-3 rounded-xl bg-emerald-700 px-7 py-4 font-bold text-white shadow-lg shadow-emerald-900/15 transition-all hover:-translate-y-1 hover:bg-emerald-800"
                         >
                             Find Your Cause

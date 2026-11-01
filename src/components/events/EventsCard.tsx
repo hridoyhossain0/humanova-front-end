@@ -1,0 +1,255 @@
+"use client";
+
+import React from "react";
+import Image from "next/image";
+import Link from "next/link";
+import {
+    MapPin,
+    CalendarDays,
+} from "lucide-react";
+
+import type { EventType } from "@/app/upcoming-events/page";
+
+interface EventsCardProps {
+    event: EventType;
+}
+
+
+// ========================================
+// SAFE DATE FORMATTER
+// ========================================
+
+function formatDate(
+    dateValue?: string
+) {
+    if (!dateValue) {
+        return "Date not available";
+    }
+
+    const date = new Date(
+        dateValue.length === 10
+            ? `${dateValue}T00:00:00`
+            : dateValue
+    );
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+        return "Date not available";
+    }
+
+    return new Intl.DateTimeFormat(
+        "en-US",
+        {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+        }
+    ).format(date);
+}
+
+
+// ========================================
+// EVENTS CARD
+// ========================================
+
+const EventsCard = ({
+    event,
+}: EventsCardProps) => {
+
+    const form = event?.form;
+
+    if (!form) {
+        return null;
+    }
+
+    const eventDate = formatDate(
+        form.eventDate
+    );
+
+    return (
+        <Link
+            href={`/upcoming-events/${event._id}`}
+            className="block"
+        >
+
+            <article
+                className="
+                    overflow-hidden
+                    rounded-2xl
+                    border
+                    border-slate-200
+                    bg-white
+                    shadow-sm
+                    transition-all
+                    duration-300
+                    hover:-translate-y-1
+                    hover:shadow-xl
+                    dark:border-slate-800
+                    dark:bg-slate-900
+                "
+            >
+
+                {/* IMAGE */}
+
+                <div
+                    className="
+                        relative
+                        h-52
+                        w-full
+                        overflow-hidden
+                        bg-slate-100
+                        dark:bg-slate-800
+                    "
+                >
+
+                    {form.imageUrl ? (
+
+                        <Image
+                            src={form.imageUrl}
+                            alt={
+                                form.title ||
+                                "Community event"
+                            }
+                            fill
+                            sizes="
+                                (max-width: 640px) 100vw,
+                                (max-width: 1024px) 50vw,
+                                33vw
+                            "
+                            className="object-cover transition-transform duration-500 hover:scale-105"
+                        />
+
+                    ) : (
+
+                        <div className="flex h-full items-center justify-center text-sm text-slate-400">
+                            No image available
+                        </div>
+
+                    )}
+
+                </div>
+
+
+                {/* CONTENT */}
+
+                <div className="p-5">
+
+                    {/* TYPE */}
+
+                    <span
+                        className="
+                            inline-flex
+                            rounded-lg
+                            bg-indigo-50
+                            px-3
+                            py-1
+                            text-xs
+                            font-bold
+                            text-indigo-600
+                            dark:bg-indigo-950/50
+                            dark:text-indigo-400
+                        "
+                    >
+                        {form.eventType ||
+                            "Community Service"}
+                    </span>
+
+
+                    {/* TITLE */}
+
+                    <h2
+                        className="
+                            mt-3
+                            line-clamp-2
+                            text-xl
+                            font-bold
+                            text-slate-900
+                            dark:text-white
+                        "
+                    >
+                        {form.title ||
+                            "Untitled Event"}
+                    </h2>
+
+
+                    {/* DESCRIPTION */}
+
+                    <p
+                        className="
+                            mt-2
+                            line-clamp-2
+                            text-sm
+                            leading-relaxed
+                            text-slate-500
+                            dark:text-slate-400
+                        "
+                    >
+                        {form.description ||
+                            "No description available."}
+                    </p>
+
+
+                    {/* LOCATION */}
+
+                    <div
+                        className="
+                            mt-4
+                            flex
+                            items-center
+                            gap-2
+                            text-sm
+                            text-slate-500
+                            dark:text-slate-400
+                        "
+                    >
+
+                        <MapPin
+                            size={16}
+                            className="shrink-0 text-indigo-500"
+                        />
+
+                        <span className="line-clamp-1">
+                            {form.location ||
+                                "Location not available"}
+                        </span>
+
+                    </div>
+
+
+                    {/* DATE */}
+
+                    <div
+                        className="
+                            mt-2
+                            flex
+                            items-center
+                            gap-2
+                            text-sm
+                            text-slate-500
+                            dark:text-slate-400
+                        "
+                    >
+
+                        <CalendarDays
+                            size={16}
+                            className="shrink-0 text-indigo-500"
+                        />
+
+                        <span>
+                            {eventDate}
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+        </Link>
+    );
+};
+
+export default EventsCard;

@@ -159,7 +159,7 @@ export default function NavBar() {
                                 href="/sign-up"
                                 className="rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-neutral-700 active:scale-95 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
                             >
-                                Get Started
+                                Sign Up
                             </Link>
                         </>
                     ) : (
@@ -346,11 +346,10 @@ export default function NavBar() {
                                         {session.user.email}
                                     </p>
                                 </div>
-                            </div>
+                            </div> 
 
                             
-
-
+     
                             {userAcess.map((user) => {
                                 const active = isActive(user.href);
 

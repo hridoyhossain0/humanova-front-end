@@ -63,12 +63,6 @@ export default function NavBar() {
         };
     }, []);
 
-    // Close menus when route changes
-    useEffect(() => {
-        setIsOpen(false);
-        setProfileOpen(false);
-    }, [pathname]);
-
     // Logout
     const handleLogout = async () => {
         try {
@@ -324,7 +318,7 @@ export default function NavBar() {
                                 onClick={() => setIsOpen(false)}
                                 className="rounded-full bg-neutral-900 py-3 text-center font-semibold text-white transition hover:bg-neutral-700 active:scale-95 dark:bg-white dark:text-neutral-900"
                             >
-                                Get Started
+                               Sign Up
                             </Link>
                         </div>
                     ) : (

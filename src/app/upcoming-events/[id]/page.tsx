@@ -1,11 +1,16 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import { connection } from "next/server";
 
 import EventDetails, {
     EventType,
 } from "@/components/events/EventDetails";
 
 import { getTokenFromServer } from "@/lib/getTokenFromServer";
+
+// This live API-driven page is allowed to wait for the server response.
+export const instant = false;
 
 
 // ========================================
@@ -26,6 +31,9 @@ interface PageProps {
 export default async function EventDetailsPage({
     params,
 }: PageProps) {
+
+    // This page reads a live event from the API, so render it per request.
+    await connection();
 
     const { id } = await params;
 
@@ -163,8 +171,21 @@ export default async function EventDetailsPage({
     // RESPONSE
     // ========================================
 
-    const event: EventType =
-        await res.json();
+    // Some API error paths return a successful status with an empty body.
+    // Avoid parsing an empty response and show the existing not-found route.
+    const responseText = await res.text();
+
+    if (!responseText.trim()) {
+        notFound();
+    }
+
+    let event: EventType;
+
+    try {
+        event = JSON.parse(responseText) as EventType;
+    } catch {
+        notFound();
+    }
 
 
     return (

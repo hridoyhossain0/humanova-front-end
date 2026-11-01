@@ -16,6 +16,7 @@ import { getTokenFromClient } from "@/lib/getTokenFromClient";
 
 interface JoinedEvent {
     _id: string;
+    eventId?: string | { _id?: string };
     username: string;
     email: string;
 
@@ -32,6 +33,20 @@ interface JoinedEvent {
         _id?: string;
     };
 
+    event?: {
+        username?: string;
+        email?: string;
+        title?: string;
+        description?: string;
+        eventType?: string;
+        imageUrl?: string;
+        location?: string;
+        eventDate?: string;
+        createdAt?: string;
+        _id?: string;
+    };
+
+    joiningDate?: string;
     registeringDate?: string;
 }
 
@@ -47,7 +62,6 @@ const JoinedEventsPage = () => {
         if (sessionLoading) return;
 
         if (!session?.user) {
-            setLoading(false);
             return;
         }
 
@@ -70,8 +84,13 @@ const JoinedEventsPage = () => {
                     );
                 }
 
-                const res = await fetch(`${apiUrl}/joined`, {
+                const query = new URLSearchParams({
+                    email: session.user.email,
+                });
+
+                const res = await fetch(`${apiUrl}/joined?${query}`, {
                     method: "GET",
+                    cache: "no-store",
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -88,17 +107,29 @@ const JoinedEventsPage = () => {
                     );
                 }
 
-                // API can return array OR { data: [] }
+                // API can return an array or wrap it in a response object.
                 const events: JoinedEvent[] = Array.isArray(result)
                     ? result
                     : Array.isArray(result.data)
                         ? result.data
+                        : Array.isArray(result.joinedEvents)
+                            ? result.joinedEvents
                         : [];
 
-                // Remove invalid records
+                // Older joined records use `event`; newer records use `form`.
+                // Normalize both shapes before rendering, then keep only this
+                // signed-in user's records as an extra client-side safeguard.
                 const validEvents = events.filter(
-                    (item) => item && item.form
-                );
+                    (item) =>
+                        item &&
+                        (item.form || item.event) &&
+                        item.email === session.user.email
+                ).map((item) => ({
+                    ...item,
+                    form: item.form || item.event,
+                    registeringDate:
+                        item.registeringDate || item.joiningDate,
+                }));
 
                 setJoinedEvents(validEvents);
             } catch (error) {
@@ -118,7 +149,7 @@ const JoinedEventsPage = () => {
     }, [session, sessionLoading]);
 
     // Loading
-    if (sessionLoading || loading) {
+    if (sessionLoading || (loading && session?.user)) {
         return (
             <main className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-950">
                 <div className="flex items-center gap-3 text-slate-600 dark:text-slate-300">
@@ -201,7 +232,7 @@ const JoinedEventsPage = () => {
                         </h2>
 
                         <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                            You haven't joined any events yet.
+                            You haven&apos;t joined any events yet.
                         </p>
 
                         <Link
@@ -219,6 +250,10 @@ const JoinedEventsPage = () => {
                     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                         {joinedEvents.map((joined) => {
                             const event = joined.form;
+                            const eventId =
+                                typeof joined.eventId === "string"
+                                    ? joined.eventId
+                                    : joined.eventId?._id;
 
                             // Extra safety
                             if (!event) return null;
@@ -329,7 +364,7 @@ const JoinedEventsPage = () => {
 
                                         {/* View Event */}
                                         <Link
-                                            href={`/upcoming-events/${event._id || joined._id
+                                            href={`/upcoming-events/${eventId || event._id || joined._id
                                                 }`}
                                             className="mt-4 flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-indigo-700"
                                         >

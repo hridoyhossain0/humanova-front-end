@@ -12,6 +12,7 @@ import {
     Mail,
     UserRound,
     HeartHandshake,
+    Check,
     Clock3,
 } from "lucide-react";
 
@@ -111,11 +112,16 @@ export default function EventDetails({
     ) => {
         e.preventDefault();
 
+        if (joining) return;
+
         try {
             if (!user) {
                 alert("Please login first.");
                 return;
             }
+
+            setJoining(true);
+            setError("");
 
             const token = await getTokenFromClient();
 
@@ -124,47 +130,58 @@ export default function EventDetails({
                 return;
             }
 
-            const data = {
-                username: user.name,
-                email: user.email,
-                image: user.image,
-                eventId: event._id,
-                event: event.form,
-                joiningDate: new Date(),
-            };
+            const res = joined
+                ? await fetch(`${apiUrl}/joined/${event._id}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                        eventId: event._id,
+                        email: user.email,
+                    }),
+                })
+                : await fetch(`${apiUrl}/joined`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                        username: user.name,
+                        email: user.email,
+                        image: user.image,
+                        eventId: event._id,
+                        // Keep `event` for the existing API schema while also sending
+                        // the display shape used by the joined-events page.
+                        event: event.form,
+                        form: event.form,
+                        registeringDate: new Date().toISOString(),
+                    }),
+                });
 
-            const res = await fetch(`${apiUrl}/joined`, {
-                method: "POST",
-
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-
-                body: JSON.stringify(data),
-            });
-
-            const result = await res.json();
-
-            console.log("Join response:", result);
+            const result = await res.json().catch(() => ({}));
 
             if (!res.ok) {
                 throw new Error(
                     result.message ||
-                    `Failed to join event. Status: ${res.status}`
+                    `Failed to ${joined ? "remove" : "join"} event. Status: ${res.status}`
                 );
             }
 
-            alert("Successfully joined the event!");
+            setJoined((current) => !current);
 
         } catch (error) {
             console.error("Join Event Error:", error);
 
-            alert(
+            setError(
                 error instanceof Error
                     ? error.message
                     : "Something went wrong."
             );
+        } finally {
+            setJoining(false);
         }
     };
 
@@ -209,16 +226,22 @@ export default function EventDetails({
                             <form onSubmit={handleJoin}>
                                 <button
                                     type="submit"
-                                    disabled={joining || joined}
-                                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+                                    disabled={joining}
+                                    className="flex w-full items-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
                                 >
                                     <HeartHandshake size={18} />
 
-                                    {joining
-                                        ? "Joining..."
-                                        : joined
-                                            ? "Joined Successfully"
-                                            : "Join Event"}
+                                    <span className="flex-1 text-center">
+                                        {joining
+                                            ? joined
+                                                ? "Removing..."
+                                                : "Joining..."
+                                            : joined
+                                                ? "Joined Event"
+                                                : "Join Event"}
+                                    </span>
+
+                                    {joined && <Check size={18} />}
                                 </button>
                             </form>
 

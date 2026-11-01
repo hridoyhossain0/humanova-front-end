@@ -20,10 +20,8 @@ import LOGO from '../../public/LOGO.png';
 
 const navItems = [
     { name: 'Home', href: '/' },
-    { name: 'Opportunities', href: '/opportunities' },
-    { name: 'Applications', href: '/applications' },
-    { name: 'Resources', href: '/resources' },
-    { name: 'Chat', href: '/chat' },
+    { name: 'Upcoming Events', href: '/upcoming-events' },
+    
 ];
 
 const userAcess = [

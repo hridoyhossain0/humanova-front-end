@@ -236,13 +236,9 @@ export default function CreateEventPage() {
 
             setForm(initialForm);
 
-            // Redirect
-            setTimeout(() => {
-                router.push(
-                    "/upcoming-events"
-                );
-                router.refresh();
-            }, 1500);
+            // The upcoming-events page fetches with `no-store`, so this
+            // navigation loads the event that was just created.
+            router.push("/upcoming-events");
         } catch (err) {
             console.error(
                 "Create Event Error:",

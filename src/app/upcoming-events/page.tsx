@@ -16,6 +16,10 @@ import {
 
 import EventsCard from "@/components/events/EventsCard";
 import Link from "next/link";
+import { connection } from "next/server";
+
+// This live API-driven page is allowed to wait for the server response.
+export const instant = false;
 
 
 // ========================================
@@ -46,6 +50,9 @@ export interface EventType {
 // ========================================
 
 export default async function UpcomingEventsPage() {
+    // The event list is intentionally live. Wait for a request before the
+    // uncached API call instead of trying to prerender it.
+    await connection();
 
     const categories = [
         {
@@ -115,9 +122,9 @@ export default async function UpcomingEventsPage() {
     const res = await fetch(
         `${apiUrl}/events`,
         {
-            next: {
-                revalidate: 60,
-            },
+            // A newly created event must be visible as soon as the create
+            // flow returns to this page, so do not reuse a cached list.
+            cache: "no-store",
         }
     );
 

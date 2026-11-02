@@ -34,6 +34,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
+import { toast } from "sonner";
 
 const eventTypes = [
     "Cleanup",
@@ -148,9 +149,24 @@ export default function CreateEventPage() {
 
         // Authentication check
         if (!session?.user?.email) {
-            setError(
-                "Please login before creating an event."
-            );
+            const message =
+                "Please login before creating an event.";
+
+            setError(message);
+            toast.error("Authentication required", {
+                description: message,
+            });
+            return;
+        }
+
+        if (!token) {
+            const message =
+                "Authentication token not found. Please sign in again.";
+
+            setError(message);
+            toast.error("Authentication required", {
+                description: message,
+            });
             return;
         }
 
@@ -159,9 +175,13 @@ export default function CreateEventPage() {
             process.env.NEXT_PUBLIC_API_URL;
 
         if (!apiUrl) {
-            setError(
-                "API URL is not configured. Please check your environment variables."
-            );
+            const message =
+                "API URL is not configured. Please check your environment variables.";
+
+            setError(message);
+            toast.error("Configuration error", {
+                description: message,
+            });
             return;
         }
 
@@ -170,8 +190,15 @@ export default function CreateEventPage() {
 
         if (dateError) {
             setError(dateError);
+            toast.warning("Check the event date", {
+                description: dateError,
+            });
             return;
         }
+
+        const toastId = toast.loading("Creating your event...", {
+            description: "Publishing your initiative to the community.",
+        });
 
         try {
             setLoading(true);
@@ -234,6 +261,11 @@ export default function CreateEventPage() {
             // Success
             setSuccess(true);
 
+            toast.success("Event created!", {
+                id: toastId,
+                description: `"${form.title}" is now live on Upcoming Events.`,
+            });
+
             setForm((current) => ({
                 ...current,
                 ...initialForm,
@@ -248,17 +280,19 @@ export default function CreateEventPage() {
                 err
             );
 
-            if (err instanceof TypeError) {
-                setError(
-                    "Unable to connect to the server. Check your API URL, backend server and CORS settings."
-                );
-            } else {
-                setError(
-                    err instanceof Error
+            const message =
+                err instanceof TypeError
+                    ? "Unable to connect to the server. Check your API URL, backend server and CORS settings."
+                    : err instanceof Error
                         ? err.message
-                        : "Something went wrong. Please try again."
-                );
-            }
+                        : "Something went wrong. Please try again.";
+
+            setError(message);
+
+            toast.error("Could not create event", {
+                id: toastId,
+                description: message,
+            });
         } finally {
             setLoading(false);
         }

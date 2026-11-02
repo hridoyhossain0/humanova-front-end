@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 import {
     Menu,
@@ -63,14 +64,32 @@ export default function NavBar() {
 
     // Logout
     const handleLogout = async () => {
+        const toastId = toast.loading('Signing you out...', {
+            description: 'Closing your session securely.',
+        });
+
         try {
             await authClient.signOut();
             setProfileOpen(false);
             setIsOpen(false);
+
+            toast.success('Signed out', {
+                id: toastId,
+                description: 'You have been signed out successfully.',
+            });
+
             router.replace('/');
             router.refresh();
         } catch (error) {
             console.error('Logout failed:', error);
+
+            toast.error('Sign out failed', {
+                id: toastId,
+                description:
+                    error instanceof Error
+                        ? error.message
+                        : 'Please try again.',
+            });
         }
     };
 
@@ -216,6 +235,7 @@ export default function NavBar() {
                                             key={user.href}
                                             href={user.href}
                                             prefetch
+                                            onClick={() => setProfileOpen(false)}
                                             aria-current={active ? 'page' : undefined}
                                             className={`
                                     mt-1 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium
@@ -356,12 +376,13 @@ export default function NavBar() {
                                         key={user.href}
                                         href={user.href}
                                         prefetch
+                                        onClick={() => setIsOpen(false)}
                                         aria-current={active ? 'page' : undefined}
                                         className={`
-                                    flex w-full items-center justify-center gap-2 rounded-full bg-red-50 py-3 font-medium
+                                    flex w-full items-center gap-3 rounded-xl px-5 py-4 text-base font-medium transition-all duration-200 active:scale-[0.98]
                                     ${active
                                                 ? 'bg-neutral-900 text-white shadow-md dark:bg-white dark:text-neutral-900'
-                                                : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-white'
+                                                : 'text-neutral-700 hover:bg-neutral-200/60 dark:text-neutral-300 dark:hover:bg-neutral-800'
                                             }
                                 `}
                                     >

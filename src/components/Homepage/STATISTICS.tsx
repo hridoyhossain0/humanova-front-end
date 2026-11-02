@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import {
     CalendarDays,
     SlidersHorizontal,
     PartyPopper,
 } from "lucide-react";
+
+import { isUpcomingEvent } from "@/lib/eventDate";
 
 type EventDetails = {
     eventDate?: string;
@@ -24,28 +25,19 @@ const STATISTICS = ({ events = [] }: StatisticsProps) => {
     // Events created by this app store their display data inside `form`.
     // Supporting both shapes keeps these counts usable across all event lists.
     const eventDetails = events.map((event) => event.form ?? event);
-    const [currentTime, setCurrentTime] = useState<number | null>(null);
 
-    useEffect(() => {
-        const timer = window.setTimeout(() => {
-            setCurrentTime(Date.now());
-        }, 0);
+    // "Total Events" is all-time: every event ever created.
+    const totalEvents = eventDetails.length;
 
-        return () => window.clearTimeout(timer);
-    }, []);
+    // Only events whose date has not passed yet. This matches the list shown
+    // on /upcoming-events.
+    const upcomingEvents = eventDetails.filter((event) =>
+        isUpcomingEvent(event.eventDate)
+    );
 
-    const upcomingEvents = eventDetails.filter((event) => {
-        if (!event.eventDate) return false;
-
-        const eventDate = new Date(event.eventDate);
-        return (
-            !Number.isNaN(eventDate.getTime()) &&
-            (currentTime === null || eventDate.getTime() >= currentTime)
-        );
-    });
-
+    // Categories available in the upcoming events list.
     const categoryCount = new Set(
-        eventDetails
+        upcomingEvents
             .map((event) => event.eventType?.trim())
             .filter((eventType): eventType is string => Boolean(eventType))
     ).size;
@@ -61,7 +53,7 @@ const STATISTICS = ({ events = [] }: StatisticsProps) => {
                                 Total Events
                             </p>
                             <h2 className="mt-2 text-3xl font-black text-gray-900">
-                                {eventDetails.length}
+                                {totalEvents}
                             </h2>
                         </div>
 

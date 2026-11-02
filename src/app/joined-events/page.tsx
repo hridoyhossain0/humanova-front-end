@@ -13,6 +13,7 @@ import {
 
 import { authClient } from "@/lib/auth-client";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
+import { toast } from "sonner";
 
 interface JoinedEvent {
     _id: string;
@@ -135,11 +136,16 @@ const JoinedEventsPage = () => {
             } catch (error) {
                 console.error("Joined Events Error:", error);
 
-                setError(
+                const message =
                     error instanceof Error
                         ? error.message
-                        : "Something went wrong."
-                );
+                        : "Something went wrong.";
+
+                setError(message);
+
+                toast.error("Could not load joined events", {
+                    description: message,
+                });
             } finally {
                 setLoading(false);
             }

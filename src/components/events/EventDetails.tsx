@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import {
     ArrowLeft,
@@ -18,6 +18,8 @@ import {
 
 import { authClient } from "@/lib/auth-client";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
+import { useJoinedEvents } from "@/components/providers/JoinedEventsProvider";
+import { toast } from "sonner";
 
 export interface EventType {
     _id: string;
@@ -34,6 +36,38 @@ export interface EventType {
         image?: string | null;
         createdAt?: string;
     };
+}
+
+type Participant = {
+    _id: string;
+    username?: string;
+    image?: string | null;
+};
+
+function getInitials(name?: string) {
+    const parts = (name || "Guest")
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean);
+
+    if (parts.length === 0) return "G";
+    if (parts.length === 1) {
+        return parts[0].slice(0, 2).toUpperCase();
+    }
+
+    return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+}
+
+function getParticipantSummary(participants: Participant[]) {
+    const names = participants.map(
+        (participant) => participant.username || "Guest"
+    );
+
+    if (names.length === 0) return "";
+    if (names.length === 1) return names[0];
+    if (names.length === 2) return `${names[0]} and ${names[1]}`;
+
+    return `${names[0]}, ${names[1]}, and ${names.length - 2} more`;
 }
 
 function formatEventDate(dateString: string) {
@@ -82,15 +116,78 @@ export default function EventDetails({
 }) {
     const { data: session } = authClient.useSession();
 
+    const {
+        isJoined,
+        markJoined,
+        markLeft,
+        loading: joinedLoading,
+    } = useJoinedEvents();
+
     const [joining, setJoining] = useState(false);
-    const [joined, setJoined] = useState(false);
     const [error, setError] = useState("");
+    const [participants, setParticipants] = useState<Participant[]>([]);
+    const [registeredCount, setRegisteredCount] = useState(0);
+    const [participantsLoading, setParticipantsLoading] = useState(true);
+
+    const joined = isJoined(event._id);
 
     const form = event.form;
 
     const { date, time } = formatEventDate(form.eventDate);
 
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+    const refreshParticipants = useCallback(async () => {
+        if (!apiUrl) {
+            setParticipantsLoading(false);
+            return;
+        }
+
+        setParticipantsLoading(true);
+
+        try {
+            const res = await fetch(
+                `${apiUrl}/events/${encodeURIComponent(event._id)}/participants`,
+                { cache: "no-store" }
+            );
+
+            const result = await res.json().catch(() => ({}));
+
+            if (!res.ok) {
+                throw new Error(
+                    result?.message || "Failed to load participants."
+                );
+            }
+
+            const list: Participant[] = Array.isArray(
+                result.participants
+            )
+                ? result.participants
+                : [];
+
+            setParticipants(list);
+            setRegisteredCount(
+                typeof result.registeredCount === "number"
+                    ? result.registeredCount
+                    : list.length
+            );
+        } catch (participantsError) {
+            console.error(
+                "Participants fetch failed:",
+                participantsError
+            );
+        } finally {
+            setParticipantsLoading(false);
+        }
+    }, [apiUrl, event._id]);
+
+    useEffect(() => {
+        const timer = window.setTimeout(() => {
+            void refreshParticipants();
+        }, 0);
+
+        return () => window.clearTimeout(timer);
+    }, [refreshParticipants]);
 
     const user = session?.user;
 
@@ -114,20 +211,35 @@ export default function EventDetails({
 
         if (joining) return;
 
-        try {
-            if (!user) {
-                alert("Please login first.");
-                return;
+        if (!user) {
+            toast.error("Please sign in", {
+                description:
+                    "You need an account to join this event.",
+            });
+            return;
+        }
+
+        setJoining(true);
+        setError("");
+
+        const toastId = toast.loading(
+            joined
+                ? "Removing your registration..."
+                : "Joining event...",
+            {
+                description: joined
+                    ? "Updating your joined events."
+                    : form.title || "Reserving your spot.",
             }
+        );
 
-            setJoining(true);
-            setError("");
-
+        try {
             const token = await getTokenFromClient();
 
             if (!token) {
-                alert("Authentication token not found.");
-                return;
+                throw new Error(
+                    "Authentication token not found. Please sign in again."
+                );
             }
 
             const res = joined
@@ -170,15 +282,48 @@ export default function EventDetails({
                 );
             }
 
-            setJoined((current) => !current);
+            if (joined) {
+                markLeft(event._id);
+            } else {
+                markJoined(event._id);
+            }
+
+            void refreshParticipants();
+
+            const alreadyJoined = Boolean(result?.alreadyJoined);
+
+            toast.success(
+                joined
+                    ? "Left event"
+                    : alreadyJoined
+                        ? "Already joined"
+                        : "Joined event!",
+                {
+                    id: toastId,
+                    description: joined
+                        ? `You are no longer registered for "${form.title}".`
+                        : alreadyJoined
+                            ? `You are already registered for "${form.title}".`
+                            : `You are registered for "${form.title}".`,
+                }
+            );
 
         } catch (error) {
             console.error("Join Event Error:", error);
 
-            setError(
+            const message =
                 error instanceof Error
                     ? error.message
-                    : "Something went wrong."
+                    : "Something went wrong.";
+
+            setError(message);
+
+            toast.error(
+                joined ? "Could not leave event" : "Could not join event",
+                {
+                    id: toastId,
+                    description: message,
+                }
             );
         } finally {
             setJoining(false);
@@ -226,7 +371,8 @@ export default function EventDetails({
                             <form onSubmit={handleJoin}>
                                 <button
                                     type="submit"
-                                    disabled={joining}
+                                    disabled={joining || joinedLoading}
+                                    aria-pressed={joined}
                                     className="flex w-full items-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
                                 >
                                     <HeartHandshake size={18} />
@@ -236,9 +382,11 @@ export default function EventDetails({
                                             ? joined
                                                 ? "Removing..."
                                                 : "Joining..."
-                                            : joined
-                                                ? "Joined Event"
-                                                : "Join Event"}
+                                            : joinedLoading
+                                                ? "Checking..."
+                                                : joined
+                                                    ? "Joined Event"
+                                                    : "Join Event"}
                                     </span>
 
                                     {joined && <Check size={18} />}
@@ -262,6 +410,81 @@ export default function EventDetails({
                                 <HeartHandshake size={14} />
                                 {eventType}
                             </span>
+                        </div>
+
+                        {/* GOING */}
+                        <div className="mt-6 border-t border-slate-200 pt-5 dark:border-slate-700">
+                            <div className="flex items-center justify-between gap-3">
+                                <p className="text-sm font-bold text-slate-900 dark:text-white">
+                                    Going ({registeredCount})
+                                </p>
+
+                                {!participantsLoading &&
+                                    participants.length === 0 && (
+                                        <span className="text-xs font-medium text-slate-400">
+                                            Be the first to join
+                                        </span>
+                                    )}
+                            </div>
+
+                            {participantsLoading ? (
+                                <div className="mt-4 flex -space-x-2">
+                                    {[1, 2, 3, 4].map((item) => (
+                                        <div
+                                            key={item}
+                                            className="h-11 w-11 animate-pulse rounded-full bg-slate-200 ring-2 ring-white dark:bg-slate-800 dark:ring-slate-900"
+                                        />
+                                    ))}
+                                </div>
+                            ) : participants.length > 0 ? (
+                                <>
+                                    <div className="mt-4 flex -space-x-2 overflow-x-auto pb-1">
+                                        {participants.map(
+                                            (participant) => (
+                                                <div
+                                                    key={participant._id}
+                                                    title={
+                                                        participant.username ||
+                                                        "Guest"
+                                                    }
+                                                    className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-blue-100 text-sm font-bold text-blue-600 ring-2 ring-white dark:bg-blue-950/50 dark:text-blue-300 dark:ring-slate-900"
+                                                >
+                                                    {participant.image ? (
+                                                        <Image
+                                                            src={
+                                                                participant.image
+                                                            }
+                                                            alt={
+                                                                participant.username ||
+                                                                "Event participant"
+                                                            }
+                                                            fill
+                                                            sizes="44px"
+                                                            className="object-cover"
+                                                        />
+                                                    ) : (
+                                                        <span>
+                                                            {getInitials(
+                                                                participant.username
+                                                            )}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            )
+                                        )}
+                                    </div>
+
+                                    <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
+                                        {getParticipantSummary(
+                                            participants
+                                        )}
+                                    </p>
+                                </>
+                            ) : (
+                                <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
+                                    No one has joined yet.
+                                </p>
+                            )}
                         </div>
                     </div>
 

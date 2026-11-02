@@ -4,6 +4,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 import {
     CalendarDays,
@@ -91,7 +92,7 @@ export default function ManageEventPage() {
     const userEmail = session?.user?.email;
 
     // Fetch user's events
-    const fetchMyEvents = useCallback(async () => {
+    const fetchMyEvents = useCallback(async (showSuccessToast = false) => {
         if (!userEmail || !API_URL) return;
 
         setLoading(true);
@@ -133,12 +134,22 @@ export default function ManageEventPage() {
 
             setEvents(eventList);
 
+            if (showSuccessToast) {
+                toast.success('Events refreshed', {
+                    description: `${eventList.length} event${eventList.length === 1 ? '' : 's'} loaded.`,
+                });
+            }
         } catch (err) {
-            setError(
+            const message =
                 err instanceof Error
                     ? err.message
-                    : 'Something went wrong.'
-            );
+                    : 'Something went wrong.';
+
+            setError(message);
+
+            toast.error('Could not load events', {
+                description: message,
+            });
         } finally {
             setLoading(false);
         }
@@ -232,16 +243,26 @@ export default function ManageEventPage() {
             setDeleteId(null);
             setNotification('Event deleted successfully!');
 
+            toast.success('Event deleted', {
+                description:
+                    'The event and its registrations have been removed.',
+            });
+
             window.setTimeout(() => {
                 setNotification('');
             }, 3000);
 
         } catch (err) {
-            setError(
+            const message =
                 err instanceof Error
                     ? err.message
-                    : 'Could not delete event.'
-            );
+                    : 'Could not delete event.';
+
+            setError(message);
+
+            toast.error('Delete failed', {
+                description: message,
+            });
         } finally {
             setDeleting(false);
         }
@@ -251,56 +272,73 @@ export default function ManageEventPage() {
     const handleUpdateEvent = async (values: ManageEventFormValues) => {
         if (!editEvent) return;
 
-        if (!API_URL) {
-            throw new Error('API URL is not configured.');
-        }
-
-        const token = await getTokenFromClient();
-
-        if (!token) {
-            throw new Error('Authentication token not found.');
-        }
-
-        const response = await fetch(
-            `${API_URL}/api/events/${editEvent._id}`,
-            {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({ form: values }),
+        try {
+            if (!API_URL) {
+                throw new Error('API URL is not configured.');
             }
-        );
 
-        const result = await response.json().catch(() => ({}));
+            const token = await getTokenFromClient();
 
-        if (!response.ok) {
-            throw new Error(
-                result.message || 'Failed to update event.'
+            if (!token) {
+                throw new Error('Authentication token not found.');
+            }
+
+            const response = await fetch(
+                `${API_URL}/api/events/${editEvent._id}`,
+                {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({ form: values }),
+                }
             );
+
+            const result = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(
+                    result.message || 'Failed to update event.'
+                );
+            }
+
+            const savedForm =
+                result.event?.form ?? values;
+
+            setEvents((previousEvents) =>
+                previousEvents.map((event) =>
+                    event._id === editEvent._id
+                        ? {
+                            ...event,
+                            ...savedForm,
+                        }
+                        : event
+                )
+            );
+
+            setEditEvent(null);
+            setNotification('Event updated successfully!');
+
+            toast.success('Event updated', {
+                description: `"${savedForm.title || values.title}" has been updated.`,
+            });
+
+            window.setTimeout(() => {
+                setNotification('');
+            }, 3000);
+        } catch (err) {
+            const message =
+                err instanceof Error
+                    ? err.message
+                    : 'Could not update the event.';
+
+            toast.error('Update failed', {
+                description: message,
+            });
+
+            throw err instanceof Error ? err : new Error(message);
         }
-
-        const savedForm =
-            result.event?.form ?? values;
-
-        setEvents((previousEvents) =>
-            previousEvents.map((event) =>
-                event._id === editEvent._id
-                    ? {
-                        ...event,
-                        ...savedForm,
-                    }
-                    : event
-            )
-        );
-
-        setEditEvent(null);
-        setNotification('Event updated successfully!');
-
-        window.setTimeout(() => {
-            setNotification('');
-        }, 3000);
     };
 
     // Loading session
@@ -426,7 +464,7 @@ export default function ManageEventPage() {
                     </div>
 
                     <button
-                        onClick={fetchMyEvents}
+                        onClick={() => fetchMyEvents(true)}
                         disabled={loading}
                         className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-600 transition hover:bg-gray-50 disabled:opacity-50"
                     >

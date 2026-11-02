@@ -16,6 +16,7 @@ import {
 import EventFilters from "@/components/events/EventFilters";
 import Link from "next/link";
 import { connection } from "next/server";
+import { isUpcomingEvent } from "@/lib/eventDate";
 
 // This live API-driven page is allowed to wait for the server response.
 export const instant = false;
@@ -135,6 +136,11 @@ export default async function UpcomingEventsPage() {
 
     const data: EventType[] = await res.json();
 
+    // Events whose date has already passed are not shown here.
+    const upcomingEvents = data.filter((event) =>
+        isUpcomingEvent(event.form?.eventDate)
+    );
+
     return (
         <main className="w-full bg-slate-50/50 px-4 py-10 dark:bg-slate-950 sm:px-6 lg:px-8">
 
@@ -239,7 +245,7 @@ export default async function UpcomingEventsPage() {
                 </div>
 
 
-                <EventFilters categories={categories} events={data} />
+                <EventFilters categories={categories} events={upcomingEvents} />
             </div>
 
         </main>

@@ -4,11 +4,13 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-    MapPin,
     CalendarDays,
+    Check,
+    MapPin,
 } from "lucide-react";
 
 import type { EventType } from "@/app/upcoming-events/page";
+import { useJoinedEvents } from "@/components/providers/JoinedEventsProvider";
 
 interface EventsCardProps {
     event: EventType;
@@ -61,11 +63,15 @@ const EventsCard = ({
     actions,
 }: EventsCardProps) => {
 
+    const { isJoined } = useJoinedEvents();
+
     const form = event?.form;
 
     if (!form) {
         return null;
     }
+
+    const joined = isJoined(event._id);
 
     const eventDate = formatDate(
         form.eventDate
@@ -125,6 +131,13 @@ const EventsCard = ({
                             No image available
                         </div>
 
+                    )}
+
+                    {joined && (
+                        <span className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white shadow-lg shadow-emerald-950/20">
+                            <Check size={13} />
+                            Joined
+                        </span>
                     )}
 
                 </div>

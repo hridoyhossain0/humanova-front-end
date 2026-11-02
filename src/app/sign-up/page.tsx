@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { toast } from 'sonner';
 import { authClient } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
 
@@ -18,12 +19,22 @@ export default function SignUpPage() {
         e.preventDefault();
 
         if (!acceptTerms) {
-            setErrorMsg('You must accept the terms and conditions.');
+            const message =
+                'You must accept the terms and conditions.';
+
+            setErrorMsg(message);
+            toast.warning('Terms required', {
+                description: message,
+            });
             return;
         }
 
         setLoading(true);
         setErrorMsg('');
+
+        const toastId = toast.loading('Creating your account...', {
+            description: 'Setting up your Humanova profile.',
+        });
 
         try {
             const { data, error } = await authClient.signUp.email({
@@ -34,16 +45,37 @@ export default function SignUpPage() {
             });
 
             if (data) {
+                toast.success('Account created!', {
+                    id: toastId,
+                    description: 'Welcome to Humanova.',
+                });
                 router.push('/');
+                return;
             }
 
             if (error) {
-                setErrorMsg(error.message || 'An error occurred during sign up.');
+                const message =
+                    error.message ||
+                    'An error occurred during sign up.';
+
+                setErrorMsg(message);
+                toast.error('Sign up failed', {
+                    id: toastId,
+                    description: message,
+                });
             }
         }
         catch (err) {
             console.error(err);
-            setErrorMsg('Something went wrong. Please try again.');
+
+            const message =
+                'Something went wrong. Please try again.';
+
+            setErrorMsg(message);
+            toast.error('Sign up failed', {
+                id: toastId,
+                description: message,
+            });
         }
         finally {
             setLoading(false);
@@ -51,6 +83,10 @@ export default function SignUpPage() {
     };
 
     const handleSocialSignIn = async (provider: 'google') => {
+        const toastId = toast.loading('Redirecting to Google...', {
+            description: 'Opening a secure sign-up window.',
+        });
+
         try {
             setErrorMsg('');
             await authClient.signIn.social({
@@ -60,7 +96,15 @@ export default function SignUpPage() {
         }
         catch (err) {
             console.error(err);
-            setErrorMsg('Failed to initialize social sign up.');
+
+            const message =
+                'Failed to initialize social sign up.';
+
+            setErrorMsg(message);
+            toast.error('Google sign up failed', {
+                id: toastId,
+                description: message,
+            });
         }
     };
 

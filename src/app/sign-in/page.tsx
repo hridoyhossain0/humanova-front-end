@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { toast } from 'sonner';
 import { authClient } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
 import ThemeToggle from '@/components/ThemeToggle';
@@ -19,6 +20,10 @@ const SignINPage = () => {
         setLoading(true);
         setErrorMsg('');
 
+        const toastId = toast.loading('Signing you in...', {
+            description: 'Verifying your credentials.',
+        });
+
         try {
             const { data, error } = await authClient.signIn.email({
                 email,
@@ -28,16 +33,37 @@ const SignINPage = () => {
             });
 
             if (data) {
+                toast.success('Welcome back!', {
+                    id: toastId,
+                    description: 'You have signed in successfully.',
+                });
                 router.push('/');
+                return;
             }
 
             if (error) {
-                setErrorMsg(error.message || 'An error occurred during sign in.');
+                const message =
+                    error.message ||
+                    'An error occurred during sign in.';
+
+                setErrorMsg(message);
+                toast.error('Sign in failed', {
+                    id: toastId,
+                    description: message,
+                });
             }
         }
         catch (err) {
             console.error(err);
-            setErrorMsg('Something went wrong. Please try again.');
+
+            const message =
+                'Something went wrong. Please try again.';
+
+            setErrorMsg(message);
+            toast.error('Sign in failed', {
+                id: toastId,
+                description: message,
+            });
         }
         finally {
             setLoading(false);
@@ -45,6 +71,10 @@ const SignINPage = () => {
     };
 
     const handleSocialSignIn = async (provider: 'google') => {
+        const toastId = toast.loading('Redirecting to Google...', {
+            description: 'Opening a secure sign-in window.',
+        });
+
         try {
             setErrorMsg('');
             await authClient.signIn.social({
@@ -54,7 +84,15 @@ const SignINPage = () => {
         }
         catch (err) {
             console.error(err);
-            setErrorMsg('Failed to initialize social sign in.');
+
+            const message =
+                'Failed to initialize social sign in.';
+
+            setErrorMsg(message);
+            toast.error('Google sign in failed', {
+                id: toastId,
+                description: message,
+            });
         }
     };
 

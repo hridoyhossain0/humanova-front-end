@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 
 import { authClient } from '@/lib/auth-client';
+import { getTokenFromClient } from '@/lib/getTokenFromClient';
 import EventsCard from '@/components/events/EventsCard';
 
 
@@ -86,13 +87,19 @@ export default function ManageEventPage() {
         setError('');
 
         try {
+            const token = await getTokenFromClient();
+
+            if (!token) {
+                throw new Error('Authentication token not found.');
+            }
+
             const response = await fetch(
                 `${API_URL}/api/events/my`,
                 {
                     method: 'GET',
-                    credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
                     },
                     cache: 'no-store',
                 }
@@ -181,11 +188,19 @@ export default function ManageEventPage() {
         setError('');
 
         try {
+            const token = await getTokenFromClient();
+
+            if (!token) {
+                throw new Error('Authentication token not found.');
+            }
+
             const response = await fetch(
                 `${API_URL}/api/events/${deleteId}`,
                 {
                     method: 'DELETE',
-                    credentials: 'include',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
                 }
             );
 

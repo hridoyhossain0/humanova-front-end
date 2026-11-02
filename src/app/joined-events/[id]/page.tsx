@@ -44,9 +44,11 @@ async function getEvent(id: string): Promise<Event | null> {
 
     const res = await fetch(
         `${API_URL}/joined-events/${id}`,{
-        headers: {
-            authorization: jwtToken?.token,
-        },
+        headers: jwtToken?.token
+            ? {
+                authorization: `Bearer ${jwtToken.token}`,
+            }
+            : {},
         
 });
 

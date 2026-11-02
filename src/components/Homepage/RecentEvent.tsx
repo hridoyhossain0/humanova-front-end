@@ -7,7 +7,6 @@ import {
     CalendarDays,
     UsersRound,
     Heart,
-    Leaf,
 } from "lucide-react";
 
 const events = [
@@ -173,7 +172,7 @@ const RecentEvent = () => {
                                 </div>
 
                                 <Link
-                                    href={`/events/${featuredEvent.id}`}
+                                    href="/upcoming-events"
                                     className="inline-flex items-center gap-2 rounded-xl bg-[#252720] px-5 py-3 text-xs font-semibold text-white transition-colors hover:bg-[#65775B]"
                                 >
                                     Discover event
@@ -188,7 +187,7 @@ const RecentEvent = () => {
                     {/* Supporting Events */}
                     <div className="flex flex-col gap-6 lg:col-span-5">
 
-                        {otherEvents.map((event, index) => (
+                        {otherEvents.map((event) => (
                             <article
                                 key={event.id}
                                 className="group flex flex-1 flex-col overflow-hidden rounded-[24px] border border-[#EAE8E1] bg-white transition-all duration-300 hover:border-[#C6D0BC] hover:shadow-lg sm:flex-row"
@@ -237,7 +236,7 @@ const RecentEvent = () => {
                                         </div>
 
                                         <Link
-                                            href={`/events/${event.id}`}
+                                            href="/upcoming-events"
                                             className="flex items-center justify-between text-xs font-bold text-[#65775B]"
                                         >
                                             View opportunity

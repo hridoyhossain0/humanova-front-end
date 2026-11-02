@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import { authClient } from "@/lib/auth-client";
+import { getSafeImageUrl } from "@/lib/eventImage";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
 import { toast } from "sonner";
 
@@ -260,6 +261,9 @@ const JoinedEventsPage = () => {
                                 typeof joined.eventId === "string"
                                     ? joined.eventId
                                     : joined.eventId?._id;
+                            const imageUrl = getSafeImageUrl(
+                                event?.imageUrl
+                            );
 
                             // Extra safety
                             if (!event) return null;
@@ -271,9 +275,9 @@ const JoinedEventsPage = () => {
                                 >
                                     {/* Image */}
                                     <div className="relative h-52 w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
-                                        {event.imageUrl ? (
+                                        {imageUrl ? (
                                             <Image
-                                                src={event.imageUrl}
+                                                src={imageUrl}
                                                 alt={
                                                     event.title ||
                                                     "Joined event"

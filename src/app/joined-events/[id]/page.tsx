@@ -12,8 +12,8 @@ import {
     Clock,
 } from 'lucide-react';
 import Image from 'next/image';
-import { auth } from '@/lib/auth';
-import { headers } from 'next/headers';
+import { getSafeImageUrl } from '@/lib/eventImage';
+import { getTokenFromServer } from '@/lib/getTokenFromServer';
 
 export const instant = false;
 
@@ -34,9 +34,7 @@ interface Event {
 
 async function getEvent(id: string): Promise<Event | null> {
     const API_URL = process.env.NEXT_PUBLIC_API_URL as string;
-    const jwtToken = await auth.api.getToken({
-        headers: await headers(),
-    })
+    const token = await getTokenFromServer();
 
     if (!API_URL) {
         throw new Error('API URL is not configured.');
@@ -44,9 +42,9 @@ async function getEvent(id: string): Promise<Event | null> {
 
     const res = await fetch(
         `${API_URL}/joined-events/${id}`,{
-        headers: jwtToken?.token
+        headers: token
             ? {
-                authorization: `Bearer ${jwtToken.token}`,
+                authorization: `Bearer ${token}`,
             }
             : {},
         
@@ -75,31 +73,42 @@ export default async function JoinedEventDetailsPage({
     if (!event) notFound();
 
     const eventDate = new Date(event.eventDate);
+    const hasValidDate = !Number.isNaN(eventDate.getTime());
+    const endDate = event.endDate ? new Date(event.endDate) : null;
 
-    const date = new Intl.DateTimeFormat('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-    }).format(eventDate);
+    const date = hasValidDate
+        ? new Intl.DateTimeFormat('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+        }).format(eventDate)
+        : 'Date not available';
 
-    const time = new Intl.DateTimeFormat('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-    }).format(eventDate);
-
-    const endTime = event.endDate
+    const time = hasValidDate
         ? new Intl.DateTimeFormat('en-US', {
             hour: '2-digit',
             minute: '2-digit',
             hour12: true,
-        }).format(new Date(event.endDate))
-        : null;
+        }).format(eventDate)
+        : '';
+
+    const endTime =
+        endDate && !Number.isNaN(endDate.getTime())
+            ? new Intl.DateTimeFormat('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true,
+            }).format(endDate)
+            : null;
 
     const categories = event.categories?.length
         ? event.categories
-        : [event.eventType];
+        : [event.eventType].filter(Boolean);
+
+    const imageUrl =
+        getSafeImageUrl(event.imageUrl) ||
+        'https://images.unsplash.com/photo-1559027615-cd4628902d4a?auto=format&fit=crop&w=1200&q=80';
 
     return (
         <main className="min-h-screen bg-white dark:bg-gray-950">
@@ -125,7 +134,7 @@ export default async function JoinedEventDetailsPage({
                         <Image
                             height={50}
                             width={50}
-                            src={event.imageUrl}
+                            src={imageUrl}
                             alt={event.title}
                             className="h-[300px] w-full object-cover sm:h-[380px]"
                         />

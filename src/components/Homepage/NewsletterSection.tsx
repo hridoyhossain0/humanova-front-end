@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import {
     ArrowUpRight,
     Mail,
@@ -16,17 +17,102 @@ import {
 const NewsletterSection = () => {
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState("");
+    const [submitting, setSubmitting] = useState(false);
 
-    const handleSubscribe = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubscribe = async (
+        e: React.FormEvent<HTMLFormElement>
+    ) => {
         e.preventDefault();
 
-        if (!email.trim()) {
-            setMessage("Please enter your email address.");
+        const trimmedEmail = email.trim();
+
+        if (!trimmedEmail) {
+            const warningMessage = "Please enter your email address.";
+
+            setMessage(warningMessage);
+
+            toast.warning("Email required", {
+                description: warningMessage,
+            });
             return;
         }
 
-        // Connect your newsletter API here.
-        setMessage("Preview only — connect your newsletter API to subscribe.");
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+        if (!apiUrl) {
+            const errorMessage =
+                "Newsletter service is not configured yet.";
+
+            setMessage(errorMessage);
+
+            toast.error("Subscription unavailable", {
+                description: errorMessage,
+            });
+            return;
+        }
+
+        if (submitting) return;
+
+        setSubmitting(true);
+        setMessage("");
+
+        const toastId = toast.loading("Subscribing you...", {
+            description: "Adding you to the Kindora Letter.",
+        });
+
+        try {
+            const response = await fetch(`${apiUrl}/newsletter`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: trimmedEmail,
+                    source: "homepage",
+                }),
+            });
+
+            const result = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(
+                    result?.message || "Could not subscribe right now."
+                );
+            }
+
+            const alreadySubscribed = Boolean(
+                result?.alreadySubscribed
+            );
+
+            const successMessage = alreadySubscribed
+                ? "You are already subscribed to the Kindora Letter."
+                : "You're subscribed! Good news is on its way.";
+
+            setMessage(successMessage);
+            setEmail("");
+
+            toast.success(
+                alreadySubscribed ? "Already subscribed" : "Subscribed!",
+                {
+                    id: toastId,
+                    description: successMessage,
+                }
+            );
+        } catch (error) {
+            const errorMessage =
+                error instanceof Error
+                    ? error.message
+                    : "Something went wrong. Please try again.";
+
+            setMessage(errorMessage);
+
+            toast.error("Subscription failed", {
+                id: toastId,
+                description: errorMessage,
+            });
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
@@ -163,9 +249,12 @@ const NewsletterSection = () => {
 
                                     <button
                                         type="submit"
-                                        className="inline-flex h-14 shrink-0 items-center justify-center gap-3 rounded-xl bg-[#879779] px-7 text-sm font-semibold text-white transition-all duration-300 hover:bg-[#65775B] hover:shadow-lg"
+                                        disabled={submitting}
+                                        className="inline-flex h-14 shrink-0 items-center justify-center gap-3 rounded-xl bg-[#879779] px-7 text-sm font-semibold text-white transition-all duration-300 hover:bg-[#65775B] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
                                     >
-                                        Stay Connected
+                                        {submitting
+                                            ? "Subscribing..."
+                                            : "Stay Connected"}
                                         <Send size={16} />
                                     </button>
 

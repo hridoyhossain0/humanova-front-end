@@ -11,6 +11,8 @@ import {
     X,
 } from 'lucide-react';
 
+import { getSafeImageUrl } from '@/lib/eventImage';
+
 export interface ManageEventDetails {
     _id: string;
     title: string;
@@ -55,7 +57,7 @@ export default function EventDetailsModal({
     onEdit,
     onDelete,
 }: EventDetailsModalProps) {
-    const imageUrl = event.imageUrl;
+    const imageUrl = getSafeImageUrl(event.imageUrl);
 
     return (
         <div

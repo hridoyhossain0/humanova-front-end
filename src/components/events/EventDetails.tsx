@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 
 import { authClient } from "@/lib/auth-client";
+import { getSafeImageUrl } from "@/lib/eventImage";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
 import { useJoinedEvents } from "@/components/providers/JoinedEventsProvider";
 import { toast } from "sonner";
@@ -201,8 +202,10 @@ export default function EventDetails({
         form.email || "Organizer contact unavailable";
 
     const imageUrl =
-        form.imageUrl ||
+        getSafeImageUrl(form.imageUrl) ||
         "https://images.unsplash.com/photo-1559027615-cd4628902d4a?auto=format&fit=crop&w=1200&q=80";
+
+    const organizerImage = getSafeImageUrl(form.image);
 
     const handleJoin = async (
         e: React.FormEvent<HTMLFormElement>
@@ -573,9 +576,9 @@ export default function EventDetails({
 
                                 <div className="relative h-12 w-12 overflow-hidden rounded-full bg-indigo-100 dark:bg-indigo-950">
 
-                                    {form.image ? (
+                                    {organizerImage ? (
                                         <Image
-                                            src={form.image}
+                                            src={organizerImage}
                                             alt={creatorName}
                                             fill
                                             sizes="48px"

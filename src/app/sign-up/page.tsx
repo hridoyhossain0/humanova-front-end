@@ -181,12 +181,16 @@ export default function SignUpPage() {
                         <input
                             id="password"
                             type="password"
-                            placeholder="••••••••"
+                            placeholder="Enter a strong password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
+                            minLength={8}
+                            pattern="(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}"
+                            title="Password must contain at least 8 characters, one uppercase letter, one number, and one special symbol."
                             className="w-full h-11 px-3.5 rounded-lg border border-neutral-200 text-sm placeholder-neutral-400 focus:outline-none focus:border-[#426043] focus:ring-1 focus:ring-[#426043] transition-all bg-white text-neutral-800"
                         />
+
                     </div>
 
                     {/* Terms and Conditions Checkbox */}
@@ -245,7 +249,7 @@ export default function SignUpPage() {
                 <p className="mt-8 text-xs text-[#0D3834]/80 font-medium">
                     Already have an account?{' '}
                     <Link
-                        href="/signin"
+                        href="/sign-in"
                         className="text-[#0D3834] hover:underline font-bold transition-all ml-0.5"
                     >
                         Sign in

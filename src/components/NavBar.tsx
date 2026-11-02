@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -32,6 +32,12 @@ const userAcess = [
 
 ]
 
+// True only after hydration. The server snapshot is false so the first client
+// render always matches the prerendered markup.
+const subscribeToHydration = () => () => {};
+const getHydratedSnapshot = () => true;
+const getServerHydratedSnapshot = () => false;
+
 export default function NavBar() {
     const pathname = usePathname();
     const router = useRouter();
@@ -39,6 +45,18 @@ export default function NavBar() {
     const [isOpen, setIsOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
     const profileRef = useRef<HTMLDivElement>(null);
+
+    // The active route is only reliable in the browser. A prerendered copy of
+    // this layout can be regenerated without a request URL (for example during
+    // ISR revalidation), which renders no active link on the server while the
+    // client resolves "/" from the address bar. Waiting for hydration keeps
+    // the first client render identical to the server output and lets the
+    // active state appear right after hydration.
+    const mounted = useSyncExternalStore(
+        subscribeToHydration,
+        getHydratedSnapshot,
+        getServerHydratedSnapshot,
+    );
 
     const { data: session, isPending } = authClient.useSession();
 
@@ -95,6 +113,8 @@ export default function NavBar() {
 
     // Active route detection
     const isActive = (href: string) => {
+        if (!mounted) return false;
+
         if (href === '/') return pathname === '/';
 
         return pathname === href || pathname.startsWith(`${href}/`);

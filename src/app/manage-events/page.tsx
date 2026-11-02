@@ -164,7 +164,11 @@ export default function ManageEventPage() {
             return;
         }
 
-        fetchMyEvents();
+        const timer = window.setTimeout(() => {
+            void fetchMyEvents();
+        }, 0);
+
+        return () => window.clearTimeout(timer);
     }, [session, sessionLoading, fetchMyEvents, router]);
 
     // Categories
@@ -182,17 +186,19 @@ export default function ManageEventPage() {
 
     // Search and filter
     const filteredEvents = useMemo(() => {
+        const search = searchTerm.toLowerCase();
+
         return events.filter((event) => {
             const matchesSearch =
-                event.title
+                String(event.title || '')
                     .toLowerCase()
-                    .includes(searchTerm.toLowerCase()) ||
-                event.location
+                    .includes(search) ||
+                String(event.location || '')
                     .toLowerCase()
-                    .includes(searchTerm.toLowerCase()) ||
-                event.description
+                    .includes(search) ||
+                String(event.description || '')
                     .toLowerCase()
-                    .includes(searchTerm.toLowerCase());
+                    .includes(search);
 
             const matchesCategory =
                 selectedCategory === 'All' ||
@@ -376,7 +382,7 @@ export default function ManageEventPage() {
                         <p className="mt-3 max-w-xl text-sm leading-6 text-gray-500">
                             Manage your community initiatives in one
                             place. View, edit and organize the events
-                            you've created.
+                            you&apos;ve created.
                         </p>
                     </div>
 

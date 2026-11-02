@@ -89,7 +89,7 @@ export default function HeroSection() {
                             href="/upcoming-events"
                             className="group inline-flex items-center gap-3 rounded-xl bg-emerald-700 px-7 py-4 font-bold text-white shadow-lg shadow-emerald-900/15 transition-all hover:-translate-y-1 hover:bg-emerald-800"
                         >
-                            Find Your Cause
+                            Find Upcoming Events
                             <ArrowRight
                                 size={19}
                                 className="transition-transform group-hover:translate-x-1"
@@ -101,7 +101,7 @@ export default function HeroSection() {
                             className="inline-flex items-center gap-2 rounded-xl border border-gray-300 bg-white px-7 py-4 font-bold text-[#172d25] transition-all hover:-translate-y-1 hover:border-emerald-600 hover:text-emerald-700"
                         >
                             <Heart size={18} />
-                            Start an Initiative
+                            Create an Initiative
                         </Link>
                     </div>
 

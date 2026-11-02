@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -24,13 +25,23 @@ type JoinedEventsContextValue = {
 const JoinedEventsContext =
     createContext<JoinedEventsContextValue | null>(null);
 
+// Safe initial value for server rendering.
+const initialContextValue: JoinedEventsContextValue = {
+    joinedEventIds: [],
+    loading: false,
+    isJoined: () => false,
+    markJoined: () => { },
+    markLeft: () => { },
+    refresh: async () => { },
+};
+
 type JoinedRecord = {
     eventId?: string | { _id?: string };
     form?: { _id?: string };
     event?: { _id?: string };
 };
 
-function extractEventId(item: JoinedRecord) {
+function extractEventId(item: JoinedRecord): string {
     if (typeof item.eventId === 'string') {
         return item.eventId;
     }
@@ -46,12 +57,41 @@ function extractEventId(item: JoinedRecord) {
     return item.form?._id || item.event?._id || '';
 }
 
+// Outer provider: renders safely during server prerendering.
 export function JoinedEventsProvider({
     children,
 }: {
     children: React.ReactNode;
 }) {
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) {
+        return (
+            <JoinedEventsContext.Provider value={initialContextValue}>
+                {children}
+            </JoinedEventsContext.Provider>
+        );
+    }
+
+    return (
+        <JoinedEventsClientProvider>
+            {children}
+        </JoinedEventsClientProvider>
+    );
+}
+
+// Inner provider: Better Auth session hook runs only in the browser.
+function JoinedEventsClientProvider({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
     const { data: session, isPending } = authClient.useSession();
+
     const email = session?.user?.email;
 
     const [joinedEventIds, setJoinedEventIds] = useState<string[]>([]);
@@ -95,13 +135,15 @@ export function JoinedEventsProvider({
             }
 
             const records: JoinedRecord[] = Array.isArray(result)
-                ? (result as JoinedRecord[])
-                : ((result.data ||
-                    result.joinedEvents ||
-                    []) as JoinedRecord[]);
+                ? result
+                : (
+                    result?.data ||
+                    result?.joinedEvents ||
+                    []
+                );
 
             const ids = records
-                .map((item) => extractEventId(item))
+                .map(extractEventId)
                 .filter((id): id is string => Boolean(id));
 
             setJoinedEventIds([...new Set(ids)]);
@@ -115,11 +157,7 @@ export function JoinedEventsProvider({
     useEffect(() => {
         if (isPending) return;
 
-        const timer = window.setTimeout(() => {
-            void refresh();
-        }, 0);
-
-        return () => window.clearTimeout(timer);
+        void refresh();
     }, [isPending, refresh]);
 
     const markJoined = useCallback((eventId: string) => {

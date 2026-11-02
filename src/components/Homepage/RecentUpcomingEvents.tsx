@@ -1,4 +1,9 @@
-import Link from "next/link";
+
+'use client';
+
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+
 import {
     ArrowUpRight,
     MapPin,
@@ -10,7 +15,8 @@ import {
     Droplets,
     HandHeart,
     UsersRound,
-} from "lucide-react";
+} from 'lucide-react';
+import Image from 'next/image';
 
 type EventForm = {
     title: string;
@@ -28,15 +34,15 @@ type ApiEvent = {
 
 function getCategoryIcon(type: string) {
     switch (type?.toLowerCase()) {
-        case "cleanup":
+        case 'cleanup':
             return Trash2;
-        case "plantation":
+        case 'plantation':
             return Leaf;
-        case "education":
+        case 'education':
             return GraduationCap;
-        case "blood donation":
+        case 'blood donation':
             return Droplets;
-        case "donation":
+        case 'donation':
             return HeartHandshake;
         default:
             return HandHeart;
@@ -44,10 +50,9 @@ function getCategoryIcon(type: string) {
 }
 
 function formatDate(date: string) {
-    if (!date) return "Date to be announced";
+    if (!date) return 'Date to be announced';
 
-    // Avoid timezone shifting for YYYY-MM-DD dates.
-    const [year, month, day] = date.split("-").map(Number);
+    const [year, month, day] = date.split('-').map(Number);
 
     const parsedDate =
         year && month && day
@@ -56,64 +61,114 @@ function formatDate(date: string) {
 
     if (Number.isNaN(parsedDate.getTime())) return date;
 
-    return new Intl.DateTimeFormat("en-BD", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
+    return new Intl.DateTimeFormat('en-BD', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
     }).format(parsedDate);
 }
 
-async function getUpcomingEvents(): Promise<ApiEvent[]> {
-    const apiUrl = (
-        process.env.NEXT_PUBLIC_API_URL ||
-        process.env.API_URL ||
-        ""
-    ).replace(/\/+$/, "");
+function isValidEvent(item: unknown): item is ApiEvent {
+    if (!item || typeof item !== 'object') return false;
 
-    if (!apiUrl) {
-        console.error("API URL is missing.");
-        return [];
+    const event = item as Record<string, unknown>;
+
+    if (
+        typeof event._id !== 'string' ||
+        !event.form ||
+        typeof event.form !== 'object'
+    ) {
+        return false;
     }
 
-    try {
-        const response = await fetch(
-            `${apiUrl}/events/upcoming`,
-            {
-                next: { revalidate: 60 },
-            }
-        );
+    const form = event.form as Record<string, unknown>;
 
-        if (!response.ok) {
-            console.error(
-                "Failed to fetch upcoming events:",
-                response.status
-            );
-            return [];
-        }
-
-        const data: unknown = await response.json();
-
-        if (!Array.isArray(data)) return [];
-
-        return data.filter(
-            (event): event is ApiEvent =>
-                Boolean(
-                    event &&
-                    typeof event === "object" &&
-                    "_id" in event &&
-                    "form" in event &&
-                    event.form &&
-                    typeof event.form === "object"
-                )
-        );
-    } catch (error) {
-        console.error("Upcoming events fetch failed:", error);
-        return [];
-    }
+    return (
+        typeof form.title === 'string' &&
+        typeof form.description === 'string' &&
+        typeof form.eventType === 'string' &&
+        typeof form.imageUrl === 'string' &&
+        typeof form.location === 'string' &&
+        typeof form.eventDate === 'string'
+    );
 }
 
-const RecentUpcomingEvents = async () => {
-    const events = await getUpcomingEvents();
+export default function RecentUpcomingEvents() {
+    const [events, setEvents] = useState<ApiEvent[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+
+    useEffect(() => {
+        const controller = new AbortController();
+
+        async function getUpcomingEvents() {
+            const apiUrl = (
+                process.env.NEXT_PUBLIC_API_URL || ''
+            ).replace(/\/+$/, '');
+
+            if (!apiUrl) {
+                setError('API URL is not configured.');
+                setLoading(false);
+                return;
+            }
+
+            try {
+                setLoading(true);
+                setError('');
+
+                const response = await fetch(
+                    `${apiUrl}/events/upcoming`,
+                    {
+                        method: 'GET',
+                        cache: 'no-store',
+                        signal: controller.signal,
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error(
+                        `Could not load events. Server returned ${response.status}.`
+                    );
+                }
+
+                const data: unknown = await response.json();
+
+                if (!Array.isArray(data)) {
+                    throw new Error('Unexpected events API response.');
+                }
+
+                const validEvents = data.filter(isValidEvent);
+
+                // API should already return the nearest six events.
+                // Sort defensively in case the API response is unordered.
+                validEvents.sort((a, b) =>
+                    a.form.eventDate.localeCompare(b.form.eventDate)
+                );
+
+                setEvents(validEvents.slice(0, 6));
+            } catch (err) {
+                if (
+                    err instanceof Error &&
+                    err.name === 'AbortError'
+                ) {
+                    return;
+                }
+
+                console.error('Upcoming events fetch failed:', err);
+                setError(
+                    'Unable to load upcoming events. Please try again later.'
+                );
+            } finally {
+                if (!controller.signal.aborted) {
+                    setLoading(false);
+                }
+            }
+        }
+
+        void getUpcomingEvents();
+
+        return () => controller.abort();
+    }, []);
 
     return (
         <section className="relative overflow-hidden bg-[#F8F8F5] py-20 md:py-28">
@@ -157,11 +212,47 @@ const RecentUpcomingEvents = async () => {
                     </Link>
                 </div>
 
-                {/* Exactly six maximum */}
-                {events.length > 0 ? (
+                {/* Loading State */}
+                {loading && (
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                        {Array.from({ length: 6 }).map((_, index) => (
+                            <div
+                                key={index}
+                                className="overflow-hidden rounded-[22px] border border-[#E8E7DF] bg-white"
+                            >
+                                <div className="h-60 animate-pulse bg-[#E8EDE3]" />
+                                <div className="space-y-4 p-6">
+                                    <div className="h-6 w-3/4 animate-pulse rounded bg-[#E8EDE3]" />
+                                    <div className="h-4 w-1/2 animate-pulse rounded bg-[#E8EDE3]" />
+                                    <div className="h-16 animate-pulse rounded bg-[#F1F2EC]" />
+                                    <div className="h-11 animate-pulse rounded-xl bg-[#E8EDE3]" />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {/* Error State */}
+                {!loading && error && (
+                    <div className="rounded-3xl border border-dashed border-[#D8DDD0] bg-white px-6 py-16 text-center">
+                        <HeartHandshake
+                            size={36}
+                            className="mx-auto text-[#879779]"
+                        />
+                        <h3 className="mt-5 text-xl font-semibold text-[#252720]">
+                            Events are temporarily unavailable.
+                        </h3>
+                        <p className="mt-3 text-sm text-[#85847A]">
+                            {error}
+                        </p>
+                    </div>
+                )}
+
+                {/* Events */}
+                {!loading && !error && events.length > 0 && (
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
 
-                        {events.slice(0, 6).map((event, index) => {
+                        {events.map((event, index) => {
                             const form = event.form;
                             const Icon = getCategoryIcon(form.eventType);
 
@@ -174,7 +265,9 @@ const RecentUpcomingEvents = async () => {
                                     <div className="relative h-60 overflow-hidden bg-[#E8EDE3]">
 
                                         {form.imageUrl ? (
-                                            <img
+                                            <Image
+                                                height={240}
+                                                width={400}
                                                 src={form.imageUrl}
                                                 alt={form.title}
                                                 loading="lazy"
@@ -190,7 +283,7 @@ const RecentUpcomingEvents = async () => {
                                         <div className="absolute left-4 top-4">
                                             <span className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/95 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-[#596B50] shadow-sm">
                                                 <Icon size={14} />
-                                                {form.eventType || "Community"}
+                                                {form.eventType || 'Community'}
                                             </span>
                                         </div>
 
@@ -206,7 +299,7 @@ const RecentUpcomingEvents = async () => {
                                         </div>
 
                                         <span className="absolute bottom-4 right-4 text-xs font-semibold text-white/80">
-                                            {String(index + 1).padStart(2, "0")} / 06
+                                            {String(index + 1).padStart(2, '0')} / 06
                                         </span>
                                     </div>
 
@@ -254,8 +347,10 @@ const RecentUpcomingEvents = async () => {
                             );
                         })}
                     </div>
-                ) : (
-                    /* Empty State */
+                )}
+
+                {/* Empty State */}
+                {!loading && !error && events.length === 0 && (
                     <div className="rounded-3xl border border-dashed border-[#D8DDD0] bg-white px-6 py-20 text-center">
 
                         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#EAF0E6] text-[#718467]">
@@ -311,6 +406,4 @@ const RecentUpcomingEvents = async () => {
             </div>
         </section>
     );
-};
-
-export default RecentUpcomingEvents;
+}

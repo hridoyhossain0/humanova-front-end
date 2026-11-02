@@ -12,6 +12,7 @@ import type { EventType } from "@/app/upcoming-events/page";
 
 interface EventsCardProps {
     event: EventType;
+    actions?: React.ReactNode;
 }
 
 
@@ -57,6 +58,7 @@ function formatDate(
 
 const EventsCard = ({
     event,
+    actions,
 }: EventsCardProps) => {
 
     const form = event?.form;
@@ -69,13 +71,8 @@ const EventsCard = ({
         form.eventDate
     );
 
-    return (
-        <Link
-            href={`/upcoming-events/${event._id}`}
-            className="block"
-        >
-
-            <article
+    const card = (
+        <article
                 className="
                     overflow-hidden
                     rounded-2xl
@@ -244,10 +241,27 @@ const EventsCard = ({
 
                     </div>
 
+                    {actions && (
+                        <div className="mt-5 grid grid-cols-3 gap-2 border-t border-slate-100 pt-4 dark:border-slate-800">
+                            {actions}
+                        </div>
+                    )}
+
                 </div>
 
             </article>
+    );
 
+    if (actions) {
+        return card;
+    }
+
+    return (
+        <Link
+            href={`/upcoming-events/${event._id}`}
+            className="block"
+        >
+            {card}
         </Link>
     );
 };

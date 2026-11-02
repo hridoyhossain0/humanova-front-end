@@ -51,7 +51,7 @@ const STATISTICS = ({ events = [] }: StatisticsProps) => {
     ).size;
 
     return (
-        <div>
+        <div className="container mx-auto">
             <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
 
                 <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">

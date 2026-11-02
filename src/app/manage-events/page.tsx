@@ -17,6 +17,8 @@ import {
     AlertCircle,
     Loader2,
     PartyPopper,
+    Eye,
+    Pencil,
 
     ArrowUpRight,
 } from 'lucide-react';
@@ -24,6 +26,10 @@ import {
 import { authClient } from '@/lib/auth-client';
 import { getTokenFromClient } from '@/lib/getTokenFromClient';
 import EventsCard from '@/components/events/EventsCard';
+import EventDetailsModal from '@/components/events/EventDetailsModal';
+import EditEventModal, {
+    type ManageEventFormValues,
+} from '@/components/events/EditEventModal';
 
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -38,6 +44,8 @@ type Event = {
     eventType: string;
     imageUrl?: string;
     eventDate?: string;
+    username?: string;
+    email?: string;
     form?: {
         title?: string;
         description?: string;
@@ -73,6 +81,9 @@ export default function ManageEventPage() {
 
     const [deleteId, setDeleteId] = useState<string | null>(null);
     const [deleting, setDeleting] = useState(false);
+
+    const [viewEvent, setViewEvent] = useState<Event | null>(null);
+    const [editEvent, setEditEvent] = useState<Event | null>(null);
 
     const [notification, setNotification] = useState('');
 
@@ -234,6 +245,62 @@ export default function ManageEventPage() {
         } finally {
             setDeleting(false);
         }
+    };
+
+    // Update event
+    const handleUpdateEvent = async (values: ManageEventFormValues) => {
+        if (!editEvent) return;
+
+        if (!API_URL) {
+            throw new Error('API URL is not configured.');
+        }
+
+        const token = await getTokenFromClient();
+
+        if (!token) {
+            throw new Error('Authentication token not found.');
+        }
+
+        const response = await fetch(
+            `${API_URL}/api/events/${editEvent._id}`,
+            {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ form: values }),
+            }
+        );
+
+        const result = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+            throw new Error(
+                result.message || 'Failed to update event.'
+            );
+        }
+
+        const savedForm =
+            result.event?.form ?? values;
+
+        setEvents((previousEvents) =>
+            previousEvents.map((event) =>
+                event._id === editEvent._id
+                    ? {
+                        ...event,
+                        ...savedForm,
+                    }
+                    : event
+            )
+        );
+
+        setEditEvent(null);
+        setNotification('Event updated successfully!');
+
+        window.setTimeout(() => {
+            setNotification('');
+        }, 3000);
     };
 
     // Loading session
@@ -404,8 +471,46 @@ export default function ManageEventPage() {
                                         imageUrl: event.imageUrl ?? "",
                                         location: event.location,
                                         eventDate: event.eventDate ?? "",
+                                        username: event.username,
+                                        email: event.email,
                                     },
                                 }}
+                                actions={
+                                    <>
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setViewEvent(event)
+                                            }
+                                            className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-emerald-50 px-2 py-2.5 text-xs font-bold text-emerald-700 transition hover:bg-emerald-100"
+                                        >
+                                            <Eye size={14} />
+                                            View
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setEditEvent(event)
+                                            }
+                                            className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-amber-50 px-2 py-2.5 text-xs font-bold text-amber-700 transition hover:bg-amber-100"
+                                        >
+                                            <Pencil size={14} />
+                                            Edit
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setDeleteId(event._id)
+                                            }
+                                            className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-rose-50 px-2 py-2.5 text-xs font-bold text-rose-700 transition hover:bg-rose-100"
+                                        >
+                                            <Trash2 size={14} />
+                                            Delete
+                                        </button>
+                                    </>
+                                }
                             />
                         ))}
                     </div>
@@ -459,6 +564,31 @@ export default function ManageEventPage() {
                 )}
 
             </div>
+
+            {/* EVENT DETAILS MODAL */}
+            {viewEvent && (
+                <EventDetailsModal
+                    event={viewEvent}
+                    onClose={() => setViewEvent(null)}
+                    onEdit={() => {
+                        setEditEvent(viewEvent);
+                        setViewEvent(null);
+                    }}
+                    onDelete={() => {
+                        setDeleteId(viewEvent._id);
+                        setViewEvent(null);
+                    }}
+                />
+            )}
+
+            {/* EDIT EVENT MODAL */}
+            {editEvent && (
+                <EditEventModal
+                    event={editEvent}
+                    onClose={() => setEditEvent(null)}
+                    onSave={handleUpdateEvent}
+                />
+            )}
 
             {/* DELETE CONFIRMATION MODAL */}
             {deleteId && (

@@ -17,6 +17,7 @@ import {
     UsersRound,
 } from 'lucide-react';
 import Image from 'next/image';
+import { getApiUrl } from '@/lib/api';
 
 type EventForm = {
     title: string;
@@ -102,22 +103,12 @@ export default function RecentUpcomingEvents() {
         const controller = new AbortController();
 
         async function getUpcomingEvents() {
-            const apiUrl = (
-                process.env.NEXT_PUBLIC_API_URL || ''
-            ).replace(/\/+$/, '');
-
-            if (!apiUrl) {
-                setError('API URL is not configured.');
-                setLoading(false);
-                return;
-            }
-
             try {
                 setLoading(true);
                 setError('');
 
                 const response = await fetch(
-                    `${apiUrl}/events/upcoming`,
+                    `${getApiUrl()}/events`,
                     {
                         method: 'GET',
                         cache: 'no-store',
@@ -156,7 +147,9 @@ export default function RecentUpcomingEvents() {
 
                 console.error('Upcoming events fetch failed:', err);
                 setError(
-                    'Unable to load upcoming events. Please try again later.'
+                    err instanceof Error
+                        ? err.message
+                        : 'Unable to load upcoming events. Please try again later.'
                 );
             } finally {
                 if (!controller.signal.aborted) {

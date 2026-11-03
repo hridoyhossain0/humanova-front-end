@@ -33,17 +33,18 @@ export default function EventFilters({ categories, events }: EventFiltersProps) 
             if (!matchesCategory) return false;
             if (!normalizedQuery) return true;
 
-            const searchableText = [
-                event.form?.title,
-                event.form?.description,
-                event.form?.location,
-                eventType,
-            ]
-                .filter(Boolean)
-                .join(" ")
-                .toLowerCase();
+            const title = event.form?.title?.toLowerCase() || "";
+            const description = event.form?.description?.toLowerCase() || "";
+            const location = event.form?.location?.toLowerCase() || "";
+            const category = eventType.toLowerCase();
 
-            return searchableText.includes(normalizedQuery);
+            // Match against title, description, location, or category name.
+            return (
+                title.includes(normalizedQuery) ||
+                description.includes(normalizedQuery) ||
+                location.includes(normalizedQuery) ||
+                category.includes(normalizedQuery)
+            );
         });
     }, [events, query, selectedCategory]);
 

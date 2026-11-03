@@ -14,6 +14,7 @@ import {
 import { authClient } from "@/lib/auth-client";
 import { getSafeImageUrl } from "@/lib/eventImage";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
+import { getApiUrl, fetchApiJson } from "@/lib/api";
 import { toast } from "sonner";
 
 interface JoinedEvent {
@@ -78,36 +79,29 @@ const JoinedEventsPage = () => {
                     throw new Error("Authentication token not found.");
                 }
 
-                const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-
-                if (!apiUrl) {
-                    throw new Error(
-                        "NEXT_PUBLIC_API_URL is not configured."
-                    );
-                }
+                const apiUrl = getApiUrl();
 
                 const query = new URLSearchParams({
                     email: session.user.email,
                 });
 
-                const res = await fetch(`${apiUrl}/joined?${query}`, {
-                    method: "GET",
-                    cache: "no-store",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-
-                const result = await res.json();
+                const result = await fetchApiJson<{
+                    success?: boolean;
+                    message?: string;
+                    data?: JoinedEvent[];
+                    joined?: JoinedEvent[];
+                    joinedEvents?: JoinedEvent[];
+                }>(
+                    `${apiUrl}/joined?${query}`,
+                    {
+                        method: "GET",
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
 
                 console.log("Joined API:", result);
-
-                if (!res.ok) {
-                    throw new Error(
-                        result.message ||
-                        "Failed to load joined events."
-                    );
-                }
 
                 // API can return an array or wrap it in a response object.
                 const events: JoinedEvent[] = Array.isArray(result)
@@ -303,7 +297,7 @@ const JoinedEventsPage = () => {
                                         </span>
 
                                         {/* Title */}
-                                        <h2 className="mt-3 line-clamp-2 text-xl font-bold text-slate-900 dark:text-white">
+                                        <h2 className="mt-3 line-clamp-2 text-xl mb-auto font-bold text-slate-900 dark:text-white">
                                             {event.title ||
                                                 "Untitled Event"}
                                         </h2>

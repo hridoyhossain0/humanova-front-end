@@ -14,6 +14,8 @@ import {
     Sparkles,
 } from "lucide-react";
 
+import { getApiUrl, hasApiUrl } from "@/lib/api";
+
 const NewsletterSection = () => {
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState("");
@@ -37,9 +39,7 @@ const NewsletterSection = () => {
             return;
         }
 
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-
-        if (!apiUrl) {
+        if (!hasApiUrl()) {
             const errorMessage =
                 "Newsletter service is not configured yet.";
 
@@ -61,7 +61,7 @@ const NewsletterSection = () => {
         });
 
         try {
-            const response = await fetch(`${apiUrl}/newsletter`, {
+            const response = await fetch(`${getApiUrl()}/newsletter`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

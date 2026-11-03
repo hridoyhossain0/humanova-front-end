@@ -15,6 +15,8 @@ import {
     UsersRound,
 } from "lucide-react";
 
+import { getApiUrl, hasApiUrl } from "@/lib/api";
+
 type GalleryStory = {
     id: string;
     href: string;
@@ -157,15 +159,12 @@ function isUsableImageUrl(value?: string) {
 }
 
 async function getGalleryStories(): Promise<GalleryStory[]> {
-    const apiUrl =
-        process.env.NEXT_PUBLIC_API_URL || process.env.API_URL;
-
-    if (!apiUrl) {
+    if (!hasApiUrl()) {
         return fallbackStories;
     }
 
     try {
-        const response = await fetch(`${apiUrl}/events`, {
+        const response = await fetch(`${getApiUrl()}/events`, {
             next: { revalidate: 60 },
         });
 

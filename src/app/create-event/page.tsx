@@ -33,6 +33,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { apiUrl } from "@/lib/api";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
 import { toast } from "sonner";
 
@@ -170,21 +171,6 @@ export default function CreateEventPage() {
             return;
         }
 
-        // API URL
-        const apiUrl =
-            process.env.NEXT_PUBLIC_API_URL;
-
-        if (!apiUrl) {
-            const message =
-                "API URL is not configured. Please check your environment variables.";
-
-            setError(message);
-            toast.error("Configuration error", {
-                description: message,
-            });
-            return;
-        }
-
         // Date validation
         const dateError = validateDate();
 
@@ -203,9 +189,7 @@ export default function CreateEventPage() {
         try {
             setLoading(true);
 
-            const res = await fetch(
-                `${apiUrl}/create-event`,
-                {
+            const res = await fetch(apiUrl("/create-event"), {
                     method: "POST",
 
                     headers: {
@@ -215,10 +199,8 @@ export default function CreateEventPage() {
                     },
 
                    
-
                     body: JSON.stringify({form}),
-                }
-            );
+                });
 
             const responseText =
                 await res.text();

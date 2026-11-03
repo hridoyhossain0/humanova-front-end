@@ -17,6 +17,7 @@ import EventFilters from "@/components/events/EventFilters";
 import Link from "next/link";
 import { connection } from "next/server";
 import { isUpcomingEvent } from "@/lib/eventDate";
+import { getApiUrl } from "@/lib/api";
 
 // This live API-driven page is allowed to wait for the server response.
 export const instant = false;
@@ -111,13 +112,7 @@ export default async function UpcomingEventsPage() {
         },
     ];
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-
-    if (!apiUrl) {
-        throw new Error(
-            "NEXT_PUBLIC_API_URL is not configured"
-        );
-    }
+    const apiUrl = getApiUrl();
 
     const res = await fetch(
         `${apiUrl}/events`,

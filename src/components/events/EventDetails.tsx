@@ -19,6 +19,7 @@ import {
 import { authClient } from "@/lib/auth-client";
 import { getSafeImageUrl } from "@/lib/eventImage";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
+import { getApiUrl, hasApiUrl } from "@/lib/api";
 import { useJoinedEvents } from "@/components/providers/JoinedEventsProvider";
 import { toast } from "sonner";
 
@@ -136,7 +137,7 @@ export default function EventDetails({
 
     const { date, time } = formatEventDate(form.eventDate);
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const apiUrl = hasApiUrl() ? getApiUrl() : null;
 
     const refreshParticipants = useCallback(async () => {
         if (!apiUrl) {
@@ -218,6 +219,14 @@ export default function EventDetails({
             toast.error("Please sign in", {
                 description:
                     "You need an account to join this event.",
+            });
+            return;
+        }
+
+        if (!apiUrl) {
+            toast.error("Service unavailable", {
+                description:
+                    "The events API is not configured. Please try again later.",
             });
             return;
         }

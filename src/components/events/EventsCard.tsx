@@ -94,7 +94,7 @@ const EventsCard = ({ event, actions }: EventsCardProps) => {
                 </h2>
 
                 {/* DESCRIPTION */}
-                <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                <p className="mt-2 line-clamp-2 mb-auto text-sm leading-relaxed text-slate-500 dark:text-slate-400">
                     {form.description || "No description available."}
                 </p>
 

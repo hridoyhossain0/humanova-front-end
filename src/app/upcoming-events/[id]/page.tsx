@@ -8,6 +8,7 @@ import EventDetails, {
 } from "@/components/events/EventDetails";
 
 import { getTokenFromServer } from "@/lib/getTokenFromServer";
+import { getApiUrl } from "@/lib/api";
 
 // This live API-driven page is allowed to wait for the server response.
 export const instant = false;
@@ -40,14 +41,7 @@ export default async function EventDetailsPage({
     const token =
         await getTokenFromServer();
 
-    const apiUrl =
-        process.env.NEXT_PUBLIC_API_URL;
-
-    if (!apiUrl) {
-        throw new Error(
-            "NEXT_PUBLIC_API_URL is not configured"
-        );
-    }
+    const apiUrl = getApiUrl();
 
 
     // ========================================

@@ -14,6 +14,7 @@ import {
 import Image from 'next/image';
 import { getSafeImageUrl } from '@/lib/eventImage';
 import { getTokenFromServer } from '@/lib/getTokenFromServer';
+import { getApiUrl } from '@/lib/api';
 
 export const instant = false;
 
@@ -33,12 +34,8 @@ interface Event {
 }
 
 async function getEvent(id: string): Promise<Event | null> {
-    const API_URL = process.env.NEXT_PUBLIC_API_URL as string;
+    const API_URL = getApiUrl();
     const token = await getTokenFromServer();
-
-    if (!API_URL) {
-        throw new Error('API URL is not configured.');
-    }
 
     const res = await fetch(
         `${API_URL}/joined-events/${id}`,{

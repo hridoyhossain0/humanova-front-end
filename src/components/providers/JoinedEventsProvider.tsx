@@ -12,6 +12,7 @@ import {
 
 import { authClient } from '@/lib/auth-client';
 import { getTokenFromClient } from '@/lib/getTokenFromClient';
+import { getApiUrl, hasApiUrl } from '@/lib/api';
 
 type JoinedEventsContextValue = {
     joinedEventIds: string[];
@@ -98,9 +99,7 @@ function JoinedEventsClientProvider({
     const [loading, setLoading] = useState(false);
 
     const refresh = useCallback(async () => {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-
-        if (!email || !apiUrl) {
+        if (!email || !hasApiUrl()) {
             setJoinedEventIds([]);
             setLoading(false);
             return;
@@ -118,7 +117,7 @@ function JoinedEventsClientProvider({
 
             const query = new URLSearchParams({ email });
 
-            const res = await fetch(`${apiUrl}/joined?${query}`, {
+            const res = await fetch(`${getApiUrl()}/joined?${query}`, {
                 method: 'GET',
                 headers: {
                     Authorization: `Bearer ${token}`,

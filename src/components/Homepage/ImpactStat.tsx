@@ -14,7 +14,7 @@ const impactStats = [
         label: "People making a difference",
         description: "Volunteers in our community",
         icon: Users,
-        accent: "bg-[#E8EFE4] text-[#607653]",
+        accent: "bg-[#E8EFE4] text-[#607653] dark:bg-[#263026] dark:text-[#b7cfa5]",
     },
     {
         id: 2,
@@ -22,7 +22,7 @@ const impactStats = [
         label: "Meaningful gatherings",
         description: "Community events completed",
         icon: HeartHandshake,
-        accent: "bg-[#F1EAE0] text-[#A27B4D]",
+        accent: "bg-[#F1EAE0] text-[#A27B4D] dark:bg-[#332c1f] dark:text-[#d6b783]",
     },
     {
         id: 3,
@@ -30,13 +30,13 @@ const impactStats = [
         label: "Lives touched",
         description: "Positive community impact",
         icon: Sprout,
-        accent: "bg-[#E8ECEF] text-[#657D91]",
+        accent: "bg-[#E8ECEF] text-[#657D91] dark:bg-[#1e262e] dark:text-[#a3bdd1]",
     },
 ];
 
 const ImpactStats = () => {
     return (
-        <section className="relative overflow-hidden bg-[#F5F2EA] py-20 md:py-28">
+        <section className="relative overflow-hidden bg-[#F5F2EA] py-20 md:py-28 dark:bg-[#121712]">
             <div className="mx-auto max-w-7xl px-5 md:px-10">
 
                 <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:items-center">
@@ -45,24 +45,24 @@ const ImpactStats = () => {
                     <div className="lg:col-span-4">
                         <div className="mb-5 flex items-center gap-3">
                             <span className="h-px w-9 bg-[#879779]" />
-                            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[#718267]">
+                            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[#718267] dark:text-[#9db08c]">
                                 Our Collective Impact
                             </span>
                         </div>
 
-                        <h2 className="max-w-sm text-4xl font-semibold leading-[1.15] tracking-tight text-[#252720] md:text-5xl">
+                        <h2 className="max-w-sm text-4xl font-semibold leading-[1.15] tracking-tight text-[#252720] dark:text-[#e8eae4] md:text-5xl">
                             Small actions.
-                            <span className="font-serif font-normal italic text-[#829477]">
+                            <span className="font-serif font-normal italic text-[#829477] dark:text-[#b8c4ab]">
                                 {" "}Lasting change.
                             </span>
                         </h2>
 
-                        <p className="mt-5 max-w-sm text-sm leading-7 text-[#77766D] md:text-base">
+                        <p className="mt-5 max-w-sm text-sm leading-7 text-[#77766D] dark:text-[#a8a89e] md:text-base">
                             Every volunteer, every gathering, and every act of kindness
                             brings us closer to a more connected and compassionate world.
                         </p>
 
-                        <div className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-[#34392F]">
+                        <div className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-[#34392F] dark:text-[#d5d8cd]">
                             Discover our mission
                             <ArrowUpRight size={17} />
                         </div>
@@ -77,7 +77,7 @@ const ImpactStats = () => {
                             return (
                                 <div
                                     key={stat.id}
-                                    className={`group relative overflow-hidden rounded-2xl border border-[#E6E2D8] bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[#A8B39B] hover:shadow-[0_15px_40px_rgba(37,39,32,0.07)] ${index === 0 ? "sm:col-span-2" : ""
+                                    className={`group relative overflow-hidden rounded-2xl border border-[#E6E2D8] bg-white dark:border-[#2b322c] dark:bg-[#1b221d] p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[#A8B39B] hover:shadow-[0_15px_40px_rgba(37,39,32,0.07)] ${index === 0 ? "sm:col-span-2" : ""
                                         }`}
                                 >
                                     <div className="flex items-start justify-between">
@@ -87,26 +87,26 @@ const ImpactStats = () => {
                                             <Icon size={21} strokeWidth={1.7} />
                                         </div>
 
-                                        <span className="text-xs font-medium tracking-widest text-[#B2B0A7]">
+                                        <span className="text-xs font-medium tracking-widest text-[#B2B0A7] dark:text-[#7d7c74]">
                                             0{stat.id}
                                         </span>
                                     </div>
 
                                     <div className="mt-7">
-                                        <h3 className="text-4xl font-semibold tracking-[-0.06em] text-[#252720] md:text-5xl">
+                                        <h3 className="text-4xl font-semibold tracking-[-0.06em] text-[#252720] dark:text-[#e8eae4] md:text-5xl">
                                             {stat.value}
                                         </h3>
 
-                                        <p className="mt-2 text-sm font-semibold text-[#393B34]">
+                                        <p className="mt-2 text-sm font-semibold text-[#393B34] dark:text-[#c9cdc2]">
                                             {stat.label}
                                         </p>
 
-                                        <p className="mt-1 text-xs text-[#96948B]">
+                                        <p className="mt-1 text-xs text-[#96948B] dark:text-[#83827a]">
                                             {stat.description}
                                         </p>
                                     </div>
 
-                                    <div className="mt-6 h-[2px] w-full bg-[#F0EEE8]">
+                                    <div className="mt-6 h-[2px] w-full bg-[#F0EEE8] dark:bg-[#2b322c]">
                                         <div
                                             className="h-full bg-[#8A9A75] transition-all duration-500 group-hover:w-full"
                                             style={{

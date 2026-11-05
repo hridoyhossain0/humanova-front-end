@@ -151,7 +151,7 @@ export default function CreateEventPage() {
         // Authentication check
         if (!session?.user?.email) {
             const message =
-                "Please login before creating an event.";
+                "Please log in before creating an event.";
 
             setError(message);
             toast.error("Authentication required", {
@@ -162,7 +162,7 @@ export default function CreateEventPage() {
 
         if (!token) {
             const message =
-                "Authentication token not found. Please sign in again.";
+                "Authentication token not found. Please log in again.";
 
             setError(message);
             toast.error("Authentication required", {
@@ -292,22 +292,22 @@ export default function CreateEventPage() {
         );
     }
 
-    // Login required
+    // Log in required
     if (!session?.user) {
         return (
             <main className="flex min-h-screen items-center justify-center bg-background px-6">
-                <div className="w-full max-w-md rounded-sm border border-border bg-white p-8 text-center shadow-sm">
+                <div className="w-full max-w-md rounded-sm border border-border bg-white p-8 text-center shadow-sm dark:bg-slate-900 dark:border-slate-800 dark:text-slate-100">
                     <HeartHandshake
                         size={45}
                         className="mx-auto mb-4 text-[#00A8E8]"
                     />
 
                     <h2 className="text-2xl font-semibold">
-                        Login Required
+                        Log In Required
                     </h2>
 
                     <p className="mt-2 text-sm text-muted-foreground">
-                        Please login to create a
+                        Please log in to create a
                         community event.
                     </p>
 
@@ -315,8 +315,8 @@ export default function CreateEventPage() {
                         
                         className="mt-6 bg-[#00A8E8] text-white hover:bg-[#0095d1]"
                     >
-                        <Link href="/sign-in">
-                            Login Now
+                        <Link href="/log-in">
+                            Log In
                         </Link>
                     </Button>
                 </div>

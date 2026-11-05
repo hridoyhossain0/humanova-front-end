@@ -22,7 +22,7 @@ import LOGO from '../../public/LOGO.png';
 const navItems = [
     { name: 'Home', href: '/' },
     { name: 'Upcoming Events', href: '/upcoming-events' },
-    
+
 ];
 
 const userAcess = [
@@ -34,7 +34,7 @@ const userAcess = [
 
 // True only after hydration. The server snapshot is false so the first client
 // render always matches the prerendered markup.
-const subscribeToHydration = () => () => {};
+const subscribeToHydration = () => () => { };
 const getHydratedSnapshot = () => true;
 const getServerHydratedSnapshot = () => false;
 
@@ -82,7 +82,7 @@ export default function NavBar() {
 
     // Logout
     const handleLogout = async () => {
-        const toastId = toast.loading('Signing you out...', {
+        const toastId = toast.loading('Logging you out...', {
             description: 'Closing your session securely.',
         });
 
@@ -91,9 +91,9 @@ export default function NavBar() {
             setProfileOpen(false);
             setIsOpen(false);
 
-            toast.success('Signed out', {
+            toast.success('Logged out', {
                 id: toastId,
-                description: 'You have been signed out successfully.',
+                description: 'You have been logged out successfully.',
             });
 
             router.replace('/');
@@ -101,7 +101,7 @@ export default function NavBar() {
         } catch (error) {
             console.error('Logout failed:', error);
 
-            toast.error('Sign out failed', {
+            toast.error('Log out failed', {
                 id: toastId,
                 description:
                     error instanceof Error
@@ -186,48 +186,55 @@ export default function NavBar() {
                     ) : !isLoggedIn ? (
                         <>
                             <Link
-                                href="/sign-in"
-                                className="rounded-full px-4 py-2 text-sm font-medium text-neutral-700 transition hover:bg-neutral-200/60 dark:text-neutral-200 dark:hover:bg-neutral-800"
+                                href="/log-in"
+                              className="rounded-full flex gap-2 bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-neutral-700 active:scale-95 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
                             >
-                                Sign In
+                                Log In
                             </Link>
 
-                            <Link
-                                href="/sign-up"
-                                className="rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-neutral-700 active:scale-95 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
-                            >
-                                Sign Up
-                            </Link>
+
                         </>
                     ) : (
                         <div className="relative" ref={profileRef}>
 
-                            <button
-                                onClick={() => setProfileOpen((prev) => !prev)}
-                                aria-label="Open profile menu"
-                                aria-expanded={profileOpen}
-                                className="flex items-center gap-2 rounded-full p-1 transition hover:bg-neutral-200/70 dark:hover:bg-neutral-800"
-                            >
-                                <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-neutral-900 text-white dark:bg-white dark:text-neutral-900">
-                                    {session.user.image ? (
-                                        <Image
-                                            src={session.user.image}
-                                            alt="Profile"
-                                            width={36}
-                                            height={36}
-                                            className="h-full w-full object-cover"
-                                        />
-                                    ) : (
-                                        <UserRound size={20} />
-                                    )}
-                                </div>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => setProfileOpen((prev) => !prev)}
+                                    aria-label="Open profile menu"
+                                    aria-expanded={profileOpen}
+                                    className="flex items-center gap-2 rounded-full p-1 transition hover:bg-neutral-200/70 dark:hover:bg-neutral-800"
+                                >
+                                    <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-neutral-900 text-white dark:bg-white dark:text-neutral-900">
+                                        {session.user.image ? (
+                                            <Image
+                                                src={session.user.image}
+                                                alt="Profile"
+                                                width={36}
+                                                height={36}
+                                                className="h-full w-full object-cover"
+                                            />
+                                        ) : (
+                                            <UserRound size={20} />
+                                        )}
+                                    </div>
 
-                                <ChevronDown
-                                    size={16}
-                                    className={`transition-transform duration-200 ${profileOpen ? 'rotate-180' : ''
-                                        }`}
-                                />
-                            </button>
+                                    <ChevronDown
+                                        size={16}
+                                        className={`transition-transform duration-200 ${profileOpen ? 'rotate-180' : ''
+                                            }`}
+                                    />
+                                </button>
+
+                                <button
+                                    onClick={handleLogout}
+                                    className="rounded-full flex gap-2 bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-neutral-700 active:scale-95 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
+                                >
+                                    <LogOut size={17} />
+                                    Log Out
+                                </button>
+                            </div>
+
+
 
                             {/* Dropdown */}
                             <div
@@ -275,7 +282,7 @@ export default function NavBar() {
                                     className="mt-1 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50 active:scale-[0.98] dark:hover:bg-red-950/30"
                                 >
                                     <LogOut size={17} />
-                                    Sign Out
+                                    Log Out
                                 </button>
                             </div>
                         </div>
@@ -344,20 +351,20 @@ export default function NavBar() {
                     ) : !isLoggedIn ? (
                         <div className="flex flex-col gap-3">
                             <Link
-                                href="/sign-in"
+                                href="/log-in"
                                 onClick={() => setIsOpen(false)}
                                 className="rounded-full border border-neutral-300 py-3 text-center font-medium text-neutral-800 transition hover:bg-neutral-100 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800"
                             >
-                                Sign In
+                                Log In
                             </Link>
 
-                            <Link
-                                href="/sign-up"
+                            {/* <Link
+                                href="/register"
                                 onClick={() => setIsOpen(false)}
                                 className="rounded-full bg-neutral-900 py-3 text-center font-semibold text-white transition hover:bg-neutral-700 active:scale-95 dark:bg-white dark:text-neutral-900"
                             >
-                               Sign Up
-                            </Link>
+                                Register
+                            </Link> */}
                         </div>
                     ) : (
                         <div className="space-y-4">
@@ -384,10 +391,10 @@ export default function NavBar() {
                                         {session.user.email}
                                     </p>
                                 </div>
-                            </div> 
+                            </div>
 
-                            
-     
+
+
                             {userAcess.map((user) => {
                                 const active = isActive(user.href);
 
@@ -417,7 +424,7 @@ export default function NavBar() {
                                 className="flex w-full items-center justify-center gap-2 rounded-full bg-red-50 py-3 font-medium text-red-600 transition hover:bg-red-100 active:scale-[0.98] dark:bg-red-950/30 dark:hover:bg-red-950/50"
                             >
                                 <LogOut size={18} />
-                                Sign Out
+                                Log Out
                             </button>
                         </div>
                     )}

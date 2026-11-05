@@ -68,7 +68,7 @@ const EventsCard = ({ event, actions }: EventsCardProps) => {
                         className="object-cover transition-transform duration-500 hover:scale-105"
                     />
                 ) : (
-                    <div className="flex h-full items-center justify-center text-sm text-slate-400">
+                    <div className="flex h-full items-center justify-center text-sm text-slate-400 dark:text-slate-500">
                         No image available
                     </div>
                 )}

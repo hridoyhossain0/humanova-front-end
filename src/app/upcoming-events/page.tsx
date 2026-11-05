@@ -66,49 +66,49 @@ export default async function UpcomingEventsPage() {
             name: "Cleanup",
             icon: <Trash2 size={15} />,
             color:
-                "bg-white text-amber-600 hover:bg-amber-50 border border-amber-100",
+                "bg-white text-amber-600 hover:bg-amber-50 border border-amber-100 dark:bg-slate-900 dark:text-amber-400 dark:border-slate-800 dark:hover:bg-slate-800",
         },
         {
             name: "Plantation",
             icon: <Sprout size={15} />,
             color:
-                "bg-white text-emerald-600 hover:bg-emerald-50 border border-emerald-100",
+                "bg-white text-emerald-600 hover:bg-emerald-50 border border-emerald-100 dark:bg-slate-900 dark:text-emerald-400 dark:border-slate-800 dark:hover:bg-slate-800",
         },
         {
             name: "Donation",
             icon: <Heart size={15} />,
             color:
-                "bg-white text-rose-600 hover:bg-rose-50 border border-rose-100",
+                "bg-white text-rose-600 hover:bg-rose-50 border border-rose-100 dark:bg-slate-900 dark:text-rose-400 dark:border-slate-800 dark:hover:bg-slate-800",
         },
         {
             name: "Education",
             icon: <GraduationCap size={15} />,
             color:
-                "bg-white text-violet-600 hover:bg-violet-50 border border-violet-100",
+                "bg-white text-violet-600 hover:bg-violet-50 border border-violet-100 dark:bg-slate-900 dark:text-violet-400 dark:border-slate-800 dark:hover:bg-slate-800",
         },
         {
             name: "Blood Donation",
             icon: <Droplets size={15} />,
             color:
-                "bg-white text-red-600 hover:bg-red-50 border border-red-100",
+                "bg-white text-red-600 hover:bg-red-50 border border-red-100 dark:bg-slate-900 dark:text-red-400 dark:border-slate-800 dark:hover:bg-slate-800",
         },
         {
             name: "Community Service",
             icon: <Users size={15} />,
             color:
-                "bg-white text-blue-600 hover:bg-blue-50 border border-blue-100",
+                "bg-white text-blue-600 hover:bg-blue-50 border border-blue-100 dark:bg-slate-900 dark:text-blue-400 dark:border-slate-800 dark:hover:bg-slate-800",
         },
         {
             name: "Disaster Relief",
             icon: <ShieldAlert size={15} />,
             color:
-                "bg-white text-orange-600 hover:bg-orange-50 border border-orange-100",
+                "bg-white text-orange-600 hover:bg-orange-50 border border-orange-100 dark:bg-slate-900 dark:text-orange-400 dark:border-slate-800 dark:hover:bg-slate-800",
         },
         {
             name: "Other",
             icon: <MoreHorizontal size={15} />,
             color:
-                "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200",
+                "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800 dark:hover:bg-slate-800",
         },
     ];
 

@@ -164,7 +164,7 @@ export default function RecentUpcomingEvents() {
     }, []);
 
     return (
-        <section className="relative overflow-hidden bg-[#F8F8F5] py-20 md:py-28">
+        <section className="relative overflow-hidden bg-[#F8F8F5] py-20 md:py-28 dark:bg-[#121712]">
             <div className="mx-auto max-w-7xl px-5 md:px-10">
 
                 {/* Header */}
@@ -173,20 +173,20 @@ export default function RecentUpcomingEvents() {
                     <div>
                         <div className="mb-5 flex items-center gap-3">
                             <span className="h-px w-10 bg-[#879779]" />
-                            <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#718467]">
+                            <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#718467] dark:text-[#9db08c]">
                                 Opportunities Near You
                             </span>
                         </div>
 
-                        <h2 className="max-w-2xl text-4xl font-semibold leading-tight tracking-tight text-[#252720] md:text-6xl">
+                        <h2 className="max-w-2xl text-4xl font-semibold leading-tight tracking-tight text-[#252720] dark:text-[#e8eae4] md:text-6xl">
                             Be part of
                             <br />
-                            <span className="font-serif font-normal italic text-[#879779]">
+                            <span className="font-serif font-normal italic text-[#879779] dark:text-[#a8b39b]">
                                 something meaningful.
                             </span>
                         </h2>
 
-                        <p className="mt-5 max-w-lg text-sm leading-7 text-[#77766D] md:text-base">
+                        <p className="mt-5 max-w-lg text-sm leading-7 text-[#77766D] dark:text-[#a8a89e] md:text-base">
                             Discover upcoming community initiatives.
                             Find an opportunity, meet people, and
                             make a positive difference together.
@@ -195,7 +195,7 @@ export default function RecentUpcomingEvents() {
 
                     <Link
                         href="/upcoming-events"
-                        className="group inline-flex w-fit items-center gap-3 rounded-full border border-[#DCDDD4] px-6 py-3.5 text-sm font-semibold text-[#34392F] transition-all hover:border-[#879779] hover:bg-[#EAEFE5]"
+                        className="group inline-flex w-fit items-center gap-3 rounded-full border border-[#DCDDD4] px-6 py-3.5 text-sm font-semibold text-[#34392F] transition-all hover:border-[#879779] hover:bg-[#EAEFE5] dark:border-[#2b322c] dark:text-[#d5d8cd] dark:hover:bg-[#1c241d]"
                     >
                         Explore all events
                         <ArrowUpRight
@@ -211,14 +211,14 @@ export default function RecentUpcomingEvents() {
                         {Array.from({ length: 6 }).map((_, index) => (
                             <div
                                 key={index}
-                                className="overflow-hidden rounded-[22px] border border-[#E8E7DF] bg-white"
+                                className="overflow-hidden rounded-[22px] border border-[#E8E7DF] bg-white dark:border-[#2b322c] dark:bg-[#1b221d]"
                             >
-                                <div className="h-60 animate-pulse bg-[#E8EDE3]" />
+                                <div className="h-60 animate-pulse bg-[#E8EDE3] dark:bg-[#232a23]" />
                                 <div className="space-y-4 p-6">
-                                    <div className="h-6 w-3/4 animate-pulse rounded bg-[#E8EDE3]" />
-                                    <div className="h-4 w-1/2 animate-pulse rounded bg-[#E8EDE3]" />
-                                    <div className="h-16 animate-pulse rounded bg-[#F1F2EC]" />
-                                    <div className="h-11 animate-pulse rounded-xl bg-[#E8EDE3]" />
+                                    <div className="h-6 w-3/4 animate-pulse rounded bg-[#E8EDE3] dark:bg-[#232a23]" />
+                                    <div className="h-4 w-1/2 animate-pulse rounded bg-[#E8EDE3] dark:bg-[#232a23]" />
+                                    <div className="h-16 animate-pulse rounded bg-[#F1F2EC] dark:bg-[#1e241e]" />
+                                    <div className="h-11 animate-pulse rounded-xl bg-[#E8EDE3] dark:bg-[#232a23]" />
                                 </div>
                             </div>
                         ))}
@@ -227,15 +227,15 @@ export default function RecentUpcomingEvents() {
 
                 {/* Error State */}
                 {!loading && error && (
-                    <div className="rounded-3xl border border-dashed border-[#D8DDD0] bg-white px-6 py-16 text-center">
+                    <div className="rounded-3xl border border-dashed border-[#D8DDD0] bg-white dark:border-[#2b322c] dark:bg-[#1b221d] px-6 py-16 text-center">
                         <HeartHandshake
                             size={36}
-                            className="mx-auto text-[#879779]"
+                            className="mx-auto text-[#879779] dark:text-[#a8b39b]"
                         />
-                        <h3 className="mt-5 text-xl font-semibold text-[#252720]">
+                        <h3 className="mt-5 text-xl font-semibold text-[#252720] dark:text-[#e8eae4]">
                             Events are temporarily unavailable.
                         </h3>
-                        <p className="mt-3 text-sm text-[#85847A]">
+                        <p className="mt-3 text-sm text-[#85847A] dark:text-[#9b9a90]">
                             {error}
                         </p>
                     </div>
@@ -252,10 +252,10 @@ export default function RecentUpcomingEvents() {
                             return (
                                 <article
                                     key={event._id}
-                                    className="group flex h-full flex-col overflow-hidden rounded-[22px] border border-[#E8E7DF] bg-white transition-all duration-300 hover:-translate-y-1 hover:border-[#C6D0BC] hover:shadow-[0_18px_45px_rgba(37,39,32,0.09)]"
+                                    className="group flex h-full flex-col overflow-hidden rounded-[22px] border border-[#E8E7DF] bg-white dark:border-[#2b322c] dark:bg-[#1b221d] transition-all duration-300 hover:-translate-y-1 hover:border-[#C6D0BC] hover:shadow-[0_18px_45px_rgba(37,39,32,0.09)]"
                                 >
                                     {/* Image */}
-                                    <div className="relative h-60 overflow-hidden bg-[#E8EDE3]">
+                                    <div className="relative h-60 overflow-hidden bg-[#E8EDE3] dark:bg-[#232a23]">
 
                                         {form.imageUrl ? (
                                             <Image
@@ -267,7 +267,7 @@ export default function RecentUpcomingEvents() {
                                                 className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                                             />
                                         ) : (
-                                            <div className="flex h-full items-center justify-center text-[#879779]">
+                                            <div className="flex h-full items-center justify-center text-[#879779] dark:text-[#a8b39b]">
                                                 <HeartHandshake size={55} />
                                             </div>
                                         )}
@@ -299,30 +299,30 @@ export default function RecentUpcomingEvents() {
                                     {/* Content */}
                                     <div className="flex flex-1 flex-col p-6">
 
-                                        <h3 className="line-clamp-2 text-xl font-semibold leading-snug tracking-tight text-[#252720] transition-colors group-hover:text-[#718467]">
+                                        <h3 className="line-clamp-2 text-xl font-semibold leading-snug tracking-tight text-[#252720] dark:text-[#e8eae4] transition-colors group-hover:text-[#718467] dark:group-hover:text-[#9db08c]">
                                             {form.title}
                                         </h3>
 
-                                        <div className="mt-3 flex items-center gap-2 text-xs text-[#85847A]">
+                                        <div className="mt-3 flex items-center gap-2 text-xs text-[#85847A] dark:text-[#9b9a90]">
                                             <MapPin
                                                 size={15}
-                                                className="shrink-0 text-[#879779]"
+                                                className="shrink-0 text-[#879779] dark:text-[#a8b39b]"
                                             />
                                             <span className="line-clamp-1">
                                                 {form.location}
                                             </span>
                                         </div>
 
-                                        <p className="mt-4 line-clamp-3 text-sm leading-6 text-[#85847A]">
+                                        <p className="mt-4 line-clamp-3 text-sm leading-6 text-[#85847A] dark:text-[#9b9a90]">
                                             {form.description}
                                         </p>
 
                                         <div className="mt-auto pt-6">
 
-                                            <div className="mb-5 flex items-center gap-2 border-t border-[#EEEDE7] pt-4 text-xs text-[#8B8B80]">
+                                            <div className="mb-5 flex items-center gap-2 border-t border-[#EEEDE7] dark:border-[#2b322c] pt-4 text-xs text-[#8B8B80] dark:text-[#83827a]">
                                                 <UsersRound
                                                     size={15}
-                                                    className="text-[#879779]"
+                                                    className="text-[#879779] dark:text-[#a8b39b]"
                                                 />
                                                 Community initiative
                                             </div>
@@ -344,17 +344,17 @@ export default function RecentUpcomingEvents() {
 
                 {/* Empty State */}
                 {!loading && !error && events.length === 0 && (
-                    <div className="rounded-3xl border border-dashed border-[#D8DDD0] bg-white px-6 py-20 text-center">
+                    <div className="rounded-3xl border border-dashed border-[#D8DDD0] bg-white dark:border-[#2b322c] dark:bg-[#1b221d] px-6 py-20 text-center">
 
-                        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#EAF0E6] text-[#718467]">
+                        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#EAF0E6] text-[#718467] dark:bg-[#1c241d] dark:text-[#9db08c]">
                             <HeartHandshake size={30} />
                         </div>
 
-                        <h3 className="mt-6 text-xl font-semibold text-[#252720]">
+                        <h3 className="mt-6 text-xl font-semibold text-[#252720] dark:text-[#e8eae4]">
                             New opportunities are on their way.
                         </h3>
 
-                        <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-[#85847A]">
+                        <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-[#85847A] dark:text-[#9b9a90]">
                             There are no upcoming events right now.
                             Create a community initiative and inspire
                             others to participate.
@@ -371,7 +371,7 @@ export default function RecentUpcomingEvents() {
                 )}
 
                 {/* Bottom CTA */}
-                <div className="mt-12 flex flex-col justify-between gap-6 rounded-2xl bg-[#252720] p-7 md:flex-row md:items-center md:px-10">
+                <div className="mt-12 flex flex-col justify-between gap-6 rounded-2xl bg-[#252720] p-7 dark:bg-[#1b221d] dark:border dark:border-[#2b322c] md:flex-row md:items-center md:px-10">
 
                     <div>
                         <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#B7C9A8]">
@@ -390,7 +390,7 @@ export default function RecentUpcomingEvents() {
 
                     <Link
                         href="/create-event"
-                        className="inline-flex w-fit shrink-0 items-center gap-3 rounded-xl bg-[#A8B99A] px-6 py-4 text-sm font-semibold text-[#252720] transition-colors hover:bg-white"
+                        className="inline-flex w-fit shrink-0 items-center gap-3 rounded-xl bg-[#A8B99A] px-6 py-4 text-sm font-semibold text-[#252720] dark:text-[#e8eae4] transition-colors hover:bg-white"
                     >
                         Create an event
                         <ArrowUpRight size={17} />

@@ -68,11 +68,11 @@ export default function EventDetailsModal({
             onClick={onClose}
         >
             <div
-                className="my-6 w-full max-w-2xl overflow-hidden rounded-3xl bg-white shadow-2xl"
+                className="my-6 w-full max-w-2xl overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-slate-900"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header image */}
-                <div className="relative h-52 w-full bg-gray-100 sm:h-60">
+                <div className="relative h-52 w-full bg-gray-100 sm:h-60 dark:bg-slate-800">
                     {imageUrl ? (
                         <Image
                             src={imageUrl}
@@ -82,7 +82,7 @@ export default function EventDetailsModal({
                             className="object-cover"
                         />
                     ) : (
-                        <div className="flex h-full items-center justify-center text-sm text-gray-400">
+                        <div className="flex h-full items-center justify-center text-sm text-gray-400 dark:text-slate-500">
                             No image available
                         </div>
                     )}
@@ -91,7 +91,7 @@ export default function EventDetailsModal({
                         type="button"
                         onClick={onClose}
                         aria-label="Close details"
-                        className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-gray-700 shadow-md transition hover:bg-white"
+                        className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-gray-700 shadow-md transition hover:bg-white dark:text-slate-300 dark:bg-slate-900/80 dark:hover:bg-slate-900"
                     >
                         <X size={19} />
                     </button>
@@ -102,36 +102,36 @@ export default function EventDetailsModal({
                 </div>
 
                 <div className="p-6 sm:p-8">
-                    <h2 className="text-2xl font-black tracking-tight text-gray-900 sm:text-3xl">
+                    <h2 className="text-2xl font-black tracking-tight text-gray-900 dark:text-slate-100 sm:text-3xl">
                         {event.title || 'Untitled Event'}
                     </h2>
 
                     <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                        <div className="flex items-center gap-3 rounded-2xl bg-gray-50 p-4">
-                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-emerald-600 shadow-sm">
+                        <div className="flex items-center gap-3 rounded-2xl bg-gray-50 p-4 dark:bg-slate-800">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-emerald-600 shadow-sm dark:bg-slate-900 dark:text-emerald-400">
                                 <CalendarDays size={19} />
                             </div>
 
                             <div>
-                                <p className="text-xs font-medium text-gray-400">
+                                <p className="text-xs font-medium text-gray-400 dark:text-slate-500">
                                     Date
                                 </p>
-                                <p className="mt-0.5 text-sm font-bold text-gray-800">
+                                <p className="mt-0.5 text-sm font-bold text-gray-800 dark:text-slate-200">
                                     {formatDate(event.eventDate)}
                                 </p>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-3 rounded-2xl bg-gray-50 p-4">
-                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-emerald-600 shadow-sm">
+                        <div className="flex items-center gap-3 rounded-2xl bg-gray-50 p-4 dark:bg-slate-800">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-emerald-600 shadow-sm dark:bg-slate-900 dark:text-emerald-400">
                                 <MapPin size={19} />
                             </div>
 
                             <div>
-                                <p className="text-xs font-medium text-gray-400">
+                                <p className="text-xs font-medium text-gray-400 dark:text-slate-500">
                                     Location
                                 </p>
-                                <p className="mt-0.5 line-clamp-1 text-sm font-bold text-gray-800">
+                                <p className="mt-0.5 line-clamp-1 text-sm font-bold text-gray-800 dark:text-slate-200">
                                     {event.location || 'Not specified'}
                                 </p>
                             </div>
@@ -139,28 +139,28 @@ export default function EventDetailsModal({
                     </div>
 
                     <section className="mt-6">
-                        <h3 className="text-sm font-bold uppercase tracking-wide text-gray-400">
+                        <h3 className="text-sm font-bold uppercase tracking-wide text-gray-400 dark:text-slate-500">
                             About this event
                         </h3>
-                        <p className="mt-2 whitespace-pre-line text-sm leading-7 text-gray-600">
+                        <p className="mt-2 whitespace-pre-line text-sm leading-7 text-gray-600 dark:text-slate-400">
                             {event.description || 'No description provided.'}
                         </p>
                     </section>
 
                     {(event.username || event.email) && (
-                        <section className="mt-6 border-t border-gray-100 pt-5">
+                        <section className="mt-6 border-t border-gray-100 dark:border-slate-800 pt-5">
                             <div className="flex items-center gap-3">
                                 <div className="flex h-11 w-11 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
                                     <UserRound size={20} />
                                 </div>
 
                                 <div>
-                                    <p className="text-sm font-bold text-gray-900">
+                                    <p className="text-sm font-bold text-gray-900 dark:text-slate-100">
                                         {event.username || 'Event Organizer'}
                                     </p>
 
                                     {event.email && (
-                                        <p className="mt-0.5 flex items-center gap-1.5 text-xs text-gray-500">
+                                        <p className="mt-0.5 flex items-center gap-1.5 text-xs text-gray-500 dark:text-slate-400">
                                             <Mail size={12} />
                                             {event.email}
                                         </p>
@@ -170,11 +170,11 @@ export default function EventDetailsModal({
                         </section>
                     )}
 
-                    <div className="mt-7 flex flex-col gap-3 border-t border-gray-100 pt-5 sm:flex-row">
+                    <div className="mt-7 flex flex-col gap-3 border-t border-gray-100 dark:border-slate-800 pt-5 sm:flex-row">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="rounded-xl border border-gray-200 bg-gray-50 px-5 py-3 text-sm font-bold text-gray-700 transition hover:bg-gray-100 sm:flex-1"
+                            className="rounded-xl border border-gray-200 bg-gray-50 px-5 py-3 text-sm font-bold text-gray-700 transition hover:bg-gray-100 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 sm:flex-1"
                         >
                             Close
                         </button>

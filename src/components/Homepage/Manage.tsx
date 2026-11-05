@@ -220,16 +220,16 @@ export const EventGrid = ({
 
     if (!events || events.length === 0) {
         return (
-            <div className="rounded-3xl border border-dashed border-gray-300 bg-gray-50 px-6 py-16 text-center">
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-violet-100 text-violet-600">
+            <div className="rounded-3xl border border-dashed border-gray-300 bg-gray-50 px-6 py-16 text-center dark:border-slate-700 dark:bg-slate-900">
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-violet-100 text-violet-600 dark:bg-violet-950 dark:text-violet-300">
                     <CalendarDays size={28} />
                 </div>
 
-                <h3 className="text-xl font-bold text-gray-800">
+                <h3 className="text-xl font-bold text-gray-800 dark:text-slate-100">
                     No events found
                 </h3>
 
-                <p className="mt-2 text-sm text-gray-500">
+                <p className="mt-2 text-sm text-gray-500 dark:text-slate-400">
                     There are no events to display right now.
                 </p>
             </div>

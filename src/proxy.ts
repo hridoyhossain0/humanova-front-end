@@ -5,11 +5,24 @@ export async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
     const isHomePage = pathname === '/';
-    const isAuthPage = pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up');
+    const isAuthPage = pathname.startsWith('/log-in') || pathname.startsWith('/register');
     const isApiAuth = pathname.startsWith('/api/auth');
     const isNextAsset = pathname.startsWith('/_next') || pathname.includes('.');
 
-    if (isHomePage || isAuthPage || isApiAuth || isNextAsset) {
+    // Event list and event details are public.
+    // Joining an event still requires an account and is enforced in the
+    // join handler on the detail page.
+    const isPublicEventPage =
+        pathname === '/upcoming-events' ||
+        pathname.startsWith('/upcoming-events/');
+
+    if (
+        isHomePage ||
+        isAuthPage ||
+        isApiAuth ||
+        isNextAsset ||
+        isPublicEventPage
+    ) {
         return NextResponse.next();
     }
 
@@ -18,9 +31,9 @@ export async function proxy(request: NextRequest) {
         request.cookies.get('__Secure-better-auth.session_token')?.value;
 
     if (!sessionToken) {
-        const signInURL = new URL('/sign-in', request.url);
-        signInURL.searchParams.set('callbackUrl', pathname);
-        return NextResponse.redirect(signInURL);
+        const logInURL = new URL('/log-in', request.url);
+        logInURL.searchParams.set('callbackUrl', pathname);
+        return NextResponse.redirect(logInURL);
     }
 
     return NextResponse.next();

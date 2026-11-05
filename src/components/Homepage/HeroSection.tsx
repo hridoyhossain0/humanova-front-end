@@ -18,17 +18,17 @@ const causes = [
     {
         icon: Shirt,
         label: "Clothing drives",
-        color: "bg-orange-100 text-orange-600",
+        color: "bg-orange-100 text-orange-600 dark:bg-orange-950 dark:text-orange-300",
     },
     {
         icon: Utensils,
         label: "Food support",
-        color: "bg-amber-100 text-amber-700",
+        color: "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300",
     },
     {
         icon: Leaf,
         label: "Green initiatives",
-        color: "bg-emerald-100 text-emerald-700",
+        color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300",
     },
 ];
 
@@ -37,21 +37,21 @@ const activities = [
         title: "Community Care",
         description: "Helping families in need",
         icon: HandHeart,
-        color: "bg-orange-100 text-orange-600",
+        color: "bg-orange-100 text-orange-600 dark:bg-orange-950 dark:text-orange-300",
         status: "Making a difference",
     },
     {
         title: "Green Neighborhood",
         description: "Growing a greener tomorrow",
         icon: Leaf,
-        color: "bg-emerald-100 text-emerald-700",
+        color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300",
         status: "Join the movement",
     },
 ];
 
 export default function HeroSection() {
     return (
-        <section className="relative overflow-hidden bg-[#f8f8f1]">
+        <section className="relative overflow-hidden bg-[#f8f8f1] dark:bg-[#121b16]">
             {/* Background decorations */}
             <div className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-emerald-200/30 blur-3xl" />
             <div className="pointer-events-none absolute -bottom-32 -left-32 h-96 w-96 rounded-full bg-orange-200/20 blur-3xl" />
@@ -62,13 +62,13 @@ export default function HeroSection() {
                 <div className="max-w-xl">
 
                     {/* Badge */}
-                    <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white px-4 py-2 text-sm font-semibold text-emerald-800 shadow-sm">
+                    <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white px-4 py-2 text-sm font-semibold text-emerald-800 shadow-sm dark:border-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-200">
                         <Sparkles size={15} className="text-emerald-600" />
                         Together, We Make a Difference
                     </div>
 
                     {/* Heading */}
-                    <h1 className="text-5xl font-black leading-[1.12] tracking-tight text-[#172d25] sm:text-6xl lg:text-[68px]">
+                    <h1 className="text-5xl font-black leading-[1.12] tracking-tight text-[#172d25] dark:text-[#e8f0ea] sm:text-6xl lg:text-[68px]">
                         Be the Reason
                         <span className="mt-2 block text-emerald-600">
                             Someone Smiles.
@@ -76,7 +76,7 @@ export default function HeroSection() {
                     </h1>
 
                     {/* Description */}
-                    <p className="mt-7 max-w-lg text-base leading-8 text-gray-600 sm:text-lg">
+                    <p className="mt-7 max-w-lg text-base leading-8 text-gray-600 dark:text-slate-300 sm:text-lg">
                         Real change begins with ordinary people doing
                         extraordinary things together. Discover meaningful
                         community initiatives, support those in need, and
@@ -98,7 +98,7 @@ export default function HeroSection() {
 
                         <Link
                             href="/create-event"
-                            className="inline-flex items-center gap-2 rounded-xl border border-gray-300 bg-white px-7 py-4 font-bold text-[#172d25] transition-all hover:-translate-y-1 hover:border-emerald-600 hover:text-emerald-700"
+                            className="inline-flex items-center gap-2 rounded-xl border border-gray-300 bg-white px-7 py-4 font-bold text-[#172d25] transition-all hover:-translate-y-1 hover:border-emerald-600 hover:text-emerald-700 dark:border-slate-700 dark:bg-slate-900 dark:text-emerald-100 dark:hover:border-emerald-600 dark:hover:text-emerald-300"
                         >
                             <Heart size={18} />
                             Create an Initiative
@@ -107,7 +107,7 @@ export default function HeroSection() {
 
                     {/* Community Categories */}
                     <div className="mt-12">
-                        <p className="mb-4 text-xs font-bold uppercase tracking-[2px] text-gray-400">
+                        <p className="mb-4 text-xs font-bold uppercase tracking-[2px] text-gray-400 dark:text-slate-500">
                             Make an impact through
                         </p>
 
@@ -118,7 +118,7 @@ export default function HeroSection() {
                                 return (
                                     <div
                                         key={cause.label}
-                                        className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 shadow-sm"
+                                        className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
                                     >
                                         <span className={`rounded-full p-1.5 ${cause.color}`}>
                                             <Icon size={15} />
@@ -154,7 +154,7 @@ export default function HeroSection() {
                         </div>
 
                         {/* Visual Illustration */}
-                        <div className="relative my-7 flex h-[235px] items-center justify-center overflow-hidden rounded-2xl bg-[#dcebdc]">
+                        <div className="relative my-7 flex h-[235px] items-center justify-center overflow-hidden rounded-2xl bg-[#dcebdc] dark:bg-[#223c30]">
 
                             <div className="absolute left-5 top-5 h-24 w-24 rounded-full bg-emerald-200/70" />
                             <div className="absolute bottom-0 left-0 h-20 w-full rounded-t-[50%] bg-emerald-300/60" />
@@ -231,17 +231,17 @@ export default function HeroSection() {
                     </div>
 
                     {/* Floating community card */}
-                    <div className="absolute -bottom-7 -left-5 hidden rounded-2xl border border-gray-100 bg-white p-4 shadow-xl sm:block md:-left-10">
+                    <div className="absolute -bottom-7 -left-5 hidden rounded-2xl border border-gray-100 bg-white p-4 shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/40 sm:block md:-left-10">
                         <div className="flex items-center gap-3">
-                            <div className="rounded-xl bg-orange-100 p-3 text-orange-600">
+                            <div className="rounded-xl bg-orange-100 p-3 text-orange-600 dark:bg-orange-950 dark:text-orange-300">
                                 <Users size={23} />
                             </div>
 
                             <div>
-                                <p className="text-lg font-black text-[#173c30]">
+                                <p className="text-lg font-black text-[#173c30] dark:text-emerald-100">
                                     One Community
                                 </p>
-                                <p className="text-xs text-gray-500">
+                                <p className="text-xs text-gray-500 dark:text-slate-400">
                                     Countless possibilities
                                 </p>
                             </div>
@@ -249,12 +249,12 @@ export default function HeroSection() {
                     </div>
 
                     {/* Floating location card */}
-                    <div className="absolute -right-4 top-20 hidden rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-xl sm:block">
-                        <div className="flex items-center gap-2 text-sm font-bold text-gray-700">
+                    <div className="absolute -right-4 top-20 hidden rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/40 sm:block">
+                        <div className="flex items-center gap-2 text-sm font-bold text-gray-700 dark:text-slate-200">
                             <MapPin size={17} className="text-emerald-600" />
                             Start Locally
                         </div>
-                        <p className="mt-1 text-xs text-gray-400">
+                        <p className="mt-1 text-xs text-gray-400 dark:text-slate-500">
                             Change begins nearby
                         </p>
                     </div>

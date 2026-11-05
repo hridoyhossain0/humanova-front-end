@@ -61,7 +61,7 @@ const RecentEvent = () => {
     const [featuredEvent, ...otherEvents] = events;
 
     return (
-        <section className="overflow-hidden bg-white py-24 md:py-32">
+        <section className="overflow-hidden bg-white py-24 md:py-32 dark:bg-[#121712]">
             <div className="mx-auto max-w-7xl px-5 md:px-10">
 
                 {/* Section Heading */}
@@ -71,20 +71,20 @@ const RecentEvent = () => {
 
                         <div className="mb-5 flex items-center gap-3">
                             <span className="h-px w-9 bg-[#879779]" />
-                            <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#78886B]">
+                            <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#78886B] dark:text-[#9db08c]">
                                 Make Your Next Move Matter
                             </span>
                         </div>
 
-                        <h2 className="text-4xl font-semibold leading-tight tracking-tight text-[#252720] md:text-5xl">
+                        <h2 className="text-4xl font-semibold leading-tight tracking-tight text-[#252720] dark:text-[#e8eae4] md:text-5xl">
                             Find a cause.
                             <br />
-                            <span className="font-serif font-normal italic text-[#879779]">
+                            <span className="font-serif font-normal italic text-[#879779] dark:text-[#a8b39b]">
                                 Be part of the change.
                             </span>
                         </h2>
 
-                        <p className="mt-5 max-w-lg text-sm leading-7 text-[#77766D] md:text-base">
+                        <p className="mt-5 max-w-lg text-sm leading-7 text-[#77766D] dark:text-[#a8a89e] md:text-base">
                             Discover meaningful activities happening around your
                             community. Your time, your kindness, your impact.
                         </p>
@@ -93,7 +93,7 @@ const RecentEvent = () => {
 
                     <Link
                         href="/upcoming-events"
-                        className="group inline-flex w-fit items-center gap-3 rounded-full border border-[#E6E3DB] px-6 py-3 text-sm font-semibold text-[#252720] transition-all hover:border-[#879779] hover:bg-[#F5F2EA]"
+                        className="group inline-flex w-fit items-center gap-3 rounded-full border border-[#E6E3DB] px-6 py-3 text-sm font-semibold text-[#252720] dark:text-[#e8eae4] transition-all hover:border-[#879779] hover:bg-[#F5F2EA] dark:border-[#2b322c] dark:hover:bg-[#1c241d]"
                     >
                         Explore all events
                         <ArrowUpRight
@@ -108,21 +108,21 @@ const RecentEvent = () => {
               
 
                 {/* Bottom CTA */}
-                <div className="mt-12 flex flex-col items-center justify-between gap-5 rounded-2xl bg-[#F5F2EA] p-7 md:flex-row md:px-10">
+                <div className="mt-12 flex flex-col items-center justify-between gap-5 rounded-2xl bg-[#F5F2EA] p-7 dark:bg-[#1b221d] dark:border dark:border-[#2b322c] md:flex-row md:px-10">
 
                     <div>
-                        <div className="flex items-center gap-2 text-[#65775B]">
+                        <div className="flex items-center gap-2 text-[#65775B] dark:text-[#9db08c]">
                             <Heart size={16} />
                             <span className="text-[10px] font-bold uppercase tracking-[0.2em]">
                                 Your community needs you
                             </span>
                         </div>
 
-                        <h3 className="mt-3 text-xl font-semibold text-[#252720] md:text-2xl">
+                        <h3 className="mt-3 text-xl font-semibold text-[#252720] dark:text-[#e8eae4] md:text-2xl">
                             Have an idea worth bringing to life?
                         </h3>
 
-                        <p className="mt-2 text-sm text-[#77766D]">
+                        <p className="mt-2 text-sm text-[#77766D] dark:text-[#a8a89e]">
                             Create an initiative and invite others to make an impact.
                         </p>
                     </div>

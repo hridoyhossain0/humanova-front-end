@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import {
@@ -116,6 +117,7 @@ export default function EventDetails({
 }: {
     event: EventType;
 }) {
+    const router = useRouter();
     const { data: session } = authClient.useSession();
 
     const {
@@ -216,10 +218,12 @@ export default function EventDetails({
         if (joining) return;
 
         if (!user) {
-            toast.error("Please sign in", {
-                description:
-                    "You need an account to join this event.",
-            });
+            const callbackUrl =
+                `/upcoming-events/${encodeURIComponent(event._id)}`;
+
+            router.push(
+                `/log-in?callbackUrl=${encodeURIComponent(callbackUrl)}`
+            );
             return;
         }
 
@@ -250,7 +254,7 @@ export default function EventDetails({
 
             if (!token) {
                 throw new Error(
-                    "Authentication token not found. Please sign in again."
+                    "Authentication token not found. Please log in again."
                 );
             }
 
@@ -362,7 +366,7 @@ export default function EventDetails({
                     {/* LEFT */}
                     <div className="border-b border-slate-200 p-5 dark:border-slate-800 lg:border-b-0 lg:border-r lg:p-6">
 
-                        <div className="relative h-[300px] w-full overflow-hidden rounded-2xl bg-slate-100 sm:h-[350px] lg:h-[380px]">
+                        <div className="relative h-[300px] w-full overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-800 sm:h-[350px] lg:h-[380px]">
                             <Image
                                 src={imageUrl}
                                 alt={form.title || "Event image"}
@@ -398,7 +402,9 @@ export default function EventDetails({
                                                 ? "Checking..."
                                                 : joined
                                                     ? "Joined Event"
-                                                    : "Join Event"}
+                                                    : user
+                                                        ? "Join Event"
+                                                        : "Log in to Join"}
                                     </span>
 
                                     {joined && <Check size={18} />}
@@ -433,7 +439,7 @@ export default function EventDetails({
 
                                 {!participantsLoading &&
                                     participants.length === 0 && (
-                                        <span className="text-xs font-medium text-slate-400">
+                                        <span className="text-xs font-medium text-slate-400 dark:text-slate-500">
                                             Be the first to join
                                         </span>
                                     )}
@@ -647,7 +653,7 @@ function InfoItem({
             </div>
 
             <div>
-                <p className="text-xs font-medium text-slate-400">
+                <p className="text-xs font-medium text-slate-400 dark:text-slate-500">
                     {label}
                 </p>
 

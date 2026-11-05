@@ -24,8 +24,9 @@ export default function EventFilters({ categories, events }: EventFiltersProps) 
     const filteredEvents = useMemo(() => {
         const normalizedQuery = query.trim().toLowerCase();
 
-        return events.filter((event) => {
+        const filtered = events.filter((event) => {
             const eventType = event.form?.eventType?.trim() || "";
+
             const matchesCategory =
                 selectedCategory === "All" ||
                 eventType.toLowerCase() === selectedCategory.toLowerCase();
@@ -38,13 +39,33 @@ export default function EventFilters({ categories, events }: EventFiltersProps) 
             const location = event.form?.location?.toLowerCase() || "";
             const category = eventType.toLowerCase();
 
-            // Match against title, description, location, or category name.
             return (
                 title.includes(normalizedQuery) ||
                 description.includes(normalizedQuery) ||
                 location.includes(normalizedQuery) ||
                 category.includes(normalizedQuery)
             );
+        });
+
+        // Sort closest/earliest date first
+        return [...filtered].sort((a, b) => {
+            const dateA = a.form?.eventDate
+                ? new Date(
+                    a.form.eventDate.length === 10
+                        ? `${a.form.eventDate}T00:00:00`
+                        : a.form.eventDate
+                ).getTime()
+                : Infinity;
+
+            const dateB = b.form?.eventDate
+                ? new Date(
+                    b.form.eventDate.length === 10
+                        ? `${b.form.eventDate}T00:00:00`
+                        : b.form.eventDate
+                ).getTime()
+                : Infinity;
+
+            return dateA - dateB;
         });
     }, [events, query, selectedCategory]);
 
@@ -66,11 +87,10 @@ export default function EventFilters({ categories, events }: EventFiltersProps) 
                                         onClick={() =>
                                             setSelectedCategory(category.name)
                                         }
-                                        className={`inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-xs font-bold transition-all duration-200 hover:scale-[1.02] hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
-                                            isSelected
+                                        className={`inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-xs font-bold transition-all duration-200 hover:scale-[1.02] hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${isSelected
                                                 ? "scale-[1.02] shadow-md ring-2 ring-indigo-400 ring-offset-2 dark:ring-offset-slate-950"
                                                 : ""
-                                        } ${category.color}`}
+                                            } ${category.color}`}
                                     >
                                         {category.icon}
 
@@ -82,7 +102,7 @@ export default function EventFilters({ categories, events }: EventFiltersProps) 
                     </div>
 
                     <div className="relative w-full max-w-sm lg:w-80 lg:shrink-0">
-                        <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                        <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 dark:text-slate-500">
                             <Search size={18} />
                         </span>
 
@@ -108,7 +128,7 @@ export default function EventFilters({ categories, events }: EventFiltersProps) 
                             No upcoming events found.
                         </p>
 
-                        <p className="mt-2 text-sm text-slate-400">
+                        <p className="mt-2 text-sm text-slate-400 dark:text-slate-500">
                             Create an event and bring your community together.
                         </p>
                     </div>

@@ -75,9 +75,8 @@ export default async function EventDetailsPage({
                     min-h-screen
                     items-center
                     justify-center
-                    bg-slate-50
+                    bg-slate-50 dark:bg-slate-950
                     px-6
-                    dark:bg-slate-950
                 "
             >
 
@@ -87,13 +86,11 @@ export default async function EventDetailsPage({
                         max-w-md
                         rounded-2xl
                         border
-                        border-slate-200
-                        bg-white
+                        border-slate-200 dark:border-slate-800
+                        bg-white dark:bg-slate-900
                         p-8
                         text-center
                         shadow-sm
-                        dark:border-slate-800
-                        dark:bg-slate-900
                     "
                 >
 
@@ -101,8 +98,7 @@ export default async function EventDetailsPage({
                         className="
                             text-2xl
                             font-bold
-                            text-slate-900
-                            dark:text-white
+                            text-slate-900 dark:text-slate-100
                         "
                     >
                         Event Not Found
@@ -112,8 +108,7 @@ export default async function EventDetailsPage({
                         className="
                             mt-2
                             text-sm
-                            text-slate-500
-                            dark:text-slate-400
+                            text-slate-500 dark:text-slate-400
                         "
                     >
                         The event you are looking for

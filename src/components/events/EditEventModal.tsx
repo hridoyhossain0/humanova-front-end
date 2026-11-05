@@ -95,7 +95,7 @@ export default function EditEventModal({
     };
 
     const inputClass =
-        'w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-800 outline-none transition placeholder:text-gray-400 focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/10';
+        'w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-800 outline-none transition placeholder:text-gray-400 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-emerald-500/10 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200 dark:placeholder:text-slate-600';
 
     return (
         <div
@@ -107,15 +107,15 @@ export default function EditEventModal({
         >
             <form
                 onSubmit={handleSubmit}
-                className="my-6 w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl sm:p-8"
+                className="my-6 w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl sm:p-8 dark:bg-slate-900"
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex items-start justify-between gap-4">
                     <div>
-                        <h2 className="text-2xl font-black tracking-tight text-gray-900">
+                        <h2 className="text-2xl font-black tracking-tight text-gray-900 dark:text-slate-100">
                             Edit Event
                         </h2>
-                        <p className="mt-1 text-sm text-gray-500">
+                        <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">
                             Update the details of your event.
                         </p>
                     </div>
@@ -125,7 +125,7 @@ export default function EditEventModal({
                         onClick={onClose}
                         disabled={saving}
                         aria-label="Close edit form"
-                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-600 transition hover:bg-gray-200 disabled:opacity-50"
+                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-600 transition hover:bg-gray-200 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 disabled:opacity-50"
                     >
                         <X size={19} />
                     </button>
@@ -142,7 +142,7 @@ export default function EditEventModal({
                     <div>
                         <label
                             htmlFor="edit-title"
-                            className="mb-1.5 block text-sm font-semibold text-gray-700"
+                            className="mb-1.5 block text-sm font-semibold text-gray-700 dark:text-slate-300"
                         >
                             Event title
                         </label>
@@ -159,7 +159,7 @@ export default function EditEventModal({
                         <div>
                             <label
                                 htmlFor="edit-type"
-                                className="mb-1.5 block text-sm font-semibold text-gray-700"
+                                className="mb-1.5 block text-sm font-semibold text-gray-700 dark:text-slate-300"
                             >
                                 Event type
                             </label>
@@ -182,7 +182,7 @@ export default function EditEventModal({
                         <div>
                             <label
                                 htmlFor="edit-date"
-                                className="mb-1.5 block text-sm font-semibold text-gray-700"
+                                className="mb-1.5 block text-sm font-semibold text-gray-700 dark:text-slate-300"
                             >
                                 Event date
                             </label>
@@ -201,7 +201,7 @@ export default function EditEventModal({
                     <div>
                         <label
                             htmlFor="edit-location"
-                            className="mb-1.5 block text-sm font-semibold text-gray-700"
+                            className="mb-1.5 block text-sm font-semibold text-gray-700 dark:text-slate-300"
                         >
                             Location
                         </label>
@@ -219,7 +219,7 @@ export default function EditEventModal({
                     <div>
                         <label
                             htmlFor="edit-image"
-                            className="mb-1.5 block text-sm font-semibold text-gray-700"
+                            className="mb-1.5 block text-sm font-semibold text-gray-700 dark:text-slate-300"
                         >
                             Image URL
                         </label>
@@ -237,7 +237,7 @@ export default function EditEventModal({
                     <div>
                         <label
                             htmlFor="edit-description"
-                            className="mb-1.5 block text-sm font-semibold text-gray-700"
+                            className="mb-1.5 block text-sm font-semibold text-gray-700 dark:text-slate-300"
                         >
                             Description
                         </label>
@@ -259,7 +259,7 @@ export default function EditEventModal({
                         type="button"
                         onClick={onClose}
                         disabled={saving}
-                        className="rounded-xl border border-gray-200 bg-gray-50 px-5 py-3 text-sm font-bold text-gray-700 transition hover:bg-gray-100 disabled:opacity-50"
+                        className="rounded-xl border border-gray-200 bg-gray-50 px-5 py-3 text-sm font-bold text-gray-700 dark:text-slate-300 transition hover:bg-gray-100 dark:border-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 disabled:opacity-50"
                     >
                         Cancel
                     </button>

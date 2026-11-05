@@ -53,26 +53,26 @@ const features = [
 
 const FeaturesSection = () => {
     return (
-        <section className="overflow-hidden bg-[#F5F2EA] py-24 md:py-32">
+        <section className="overflow-hidden bg-[#F5F2EA] py-24 md:py-32 dark:bg-[#121712]">
             <div className="mx-auto max-w-7xl px-5 md:px-10">
 
                 {/* Heading */}
                 <div className="mx-auto mb-16 max-w-2xl text-center">
 
-                    <span className="inline-flex items-center gap-2 rounded-full border border-[#DDE3D5] bg-[#EAF0E6] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[#65775B]">
+                    <span className="inline-flex items-center gap-2 rounded-full border border-[#DDE3D5] bg-[#EAF0E6] dark:border-[#2b322c] dark:bg-[#1c241d] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[#65775B] dark:text-[#b7cfa5]">
                         <HeartHandshake size={14} />
                         How Kindora Works
                     </span>
 
-                    <h2 className="mt-6 text-4xl font-semibold leading-tight tracking-tight text-[#252720] md:text-6xl">
+                    <h2 className="mt-6 text-4xl font-semibold leading-tight tracking-tight text-[#252720] dark:text-[#e8eae4] md:text-6xl">
                         One platform.
                         <br />
-                        <span className="font-serif font-normal italic text-[#829477]">
+                        <span className="font-serif font-normal italic text-[#829477] dark:text-[#b8c4ab]">
                             Countless ways to help.
                         </span>
                     </h2>
 
-                    <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-[#77766D] md:text-base">
+                    <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-[#77766D] dark:text-[#a8a89e] md:text-base">
                         From creating a neighborhood initiative to joining a
                         meaningful cause, Kindora makes community participation
                         easier for everyone.
@@ -104,8 +104,8 @@ const FeaturesSection = () => {
                                         : sage
                                             ? "border-[#879779] bg-[#879779] text-white"
                                             : sand
-                                                ? "border-[#E6DCCB] bg-[#EEE7DA] text-[#252720]"
-                                                : "border-[#E7E3D9] bg-white text-[#252720]"
+                                                ? "border-[#E6DCCB] bg-[#EEE7DA] dark:border-[#2b322c] dark:bg-[#201f19] text-[#252720] dark:text-[#e8eae4]"
+                                                : "border-[#E7E3D9] bg-white dark:border-[#2b322c] dark:bg-[#1b221d] text-[#252720] dark:text-[#e8eae4]"
                                     }
                 `}
                             >
@@ -120,7 +120,7 @@ const FeaturesSection = () => {
                     rounded-2xl
                     ${dark || sage
                                             ? "bg-white/10 text-white"
-                                            : "bg-[#879779]/10 text-[#65775B]"
+                                            : "bg-[#879779]/10 text-[#65775B] dark:text-[#b7cfa5]"
                                         }
                   `}>
                                         <Icon size={26} strokeWidth={1.6} />
@@ -138,7 +138,7 @@ const FeaturesSection = () => {
                     text-[10px] font-bold tracking-[0.18em]
                     ${dark || sage
                                             ? "text-[#C3D0B9]"
-                                            : "text-[#879779]"
+                                            : "text-[#879779] dark:text-[#a8b39b]"
                                         }
                   `}>
                                         {feature.tag}
@@ -154,7 +154,7 @@ const FeaturesSection = () => {
                                             ? "text-white/65"
                                             : sage
                                                 ? "text-white/85"
-                                                : "text-[#77766D]"
+                                                : "text-[#77766D] dark:text-[#a8a89e]"
                                         }
                   `}>
                                         {feature.description}
@@ -199,14 +199,14 @@ const FeaturesSection = () => {
                         {[1, 2, 3, 4].map((item) => (
                             <div
                                 key={item}
-                                className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-[#F5F2EA] bg-[#879779] text-white"
+                                className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-[#F5F2EA] bg-[#879779] dark:border-[#121712] text-white"
                             >
                                 <Users size={15} />
                             </div>
                         ))}
                     </div>
 
-                    <p className="text-sm text-[#77766D]">
+                    <p className="text-sm text-[#77766D] dark:text-[#a8a89e]">
                         Every initiative begins with someone who cares.
                     </p>
 

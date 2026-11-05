@@ -164,7 +164,7 @@ const JoinedEventsPage = () => {
         );
     }
 
-    // Login required
+    // Log in required
     if (!session?.user) {
         return (
             <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6 dark:bg-slate-950">
@@ -175,18 +175,18 @@ const JoinedEventsPage = () => {
                     />
 
                     <h1 className="mt-4 text-2xl font-bold text-slate-900 dark:text-white">
-                        Login Required
+                        Log In Required
                     </h1>
 
                     <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                        Please login to see your joined events.
+                        Please log in to see your joined events.
                     </p>
 
                     <Link
-                        href="/sign-in"
+                        href="/log-in"
                         className="mt-6 inline-flex rounded-xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-indigo-700"
                     >
-                        Login Now
+                        Log In
                     </Link>
                 </div>
             </main>
@@ -225,7 +225,7 @@ const JoinedEventsPage = () => {
                     <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center dark:border-slate-800 dark:bg-slate-900">
                         <HeartHandshake
                             size={45}
-                            className="mx-auto text-slate-400"
+                            className="mx-auto text-slate-400 dark:text-slate-500"
                         />
 
                         <h2 className="mt-4 text-xl font-bold text-slate-800 dark:text-white">
@@ -249,7 +249,23 @@ const JoinedEventsPage = () => {
                 {/* Cards */}
                 {joinedEvents.length > 0 && (
                     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                        {joinedEvents.map((joined) => {
+                        {[...joinedEvents]
+    .sort((a, b) => {
+        const today = new Date();
+
+        const dateA = a.form?.eventDate
+            ? new Date(a.form.eventDate).getTime()
+            : Infinity;
+
+        const dateB = b.form?.eventDate
+            ? new Date(b.form.eventDate).getTime()
+            : Infinity;
+
+        const diffA = Math.abs(dateA - today.getTime());
+        const diffB = Math.abs(dateB - today.getTime());
+
+        return diffA - diffB;
+    }).map((joined) => {
                             const event = joined.form;
                             const eventId =
                                 typeof joined.eventId === "string"
@@ -281,7 +297,7 @@ const JoinedEventsPage = () => {
                                                 className="object-cover"
                                             />
                                         ) : (
-                                            <div className="flex h-full items-center justify-center text-sm text-slate-400">
+                                            <div className="flex h-full items-center justify-center text-sm text-slate-400 dark:text-slate-500">
                                                 No image available
                                             </div>
                                         )}
@@ -350,7 +366,7 @@ const JoinedEventsPage = () => {
                                                 ✓ Joined
                                             </span>
 
-                                            <span className="text-xs text-slate-400">
+                                            <span className="text-xs text-slate-400 dark:text-slate-500">
                                                 {joined.registeringDate
                                                     ? new Date(
                                                         joined.registeringDate

@@ -114,7 +114,7 @@ export default async function JoinedEventDetailsPage({
             <div className="mx-auto max-w-7xl px-5 pt-8">
                 <Link
                     href="/upcoming-events"
-                    className="inline-flex items-center gap-2 text-sm text-gray-500 transition hover:text-emerald-600"
+                    className="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-slate-400 transition hover:text-emerald-600"
                 >
                     <ArrowLeft size={17} />
                     Back to events
@@ -147,15 +147,15 @@ export default async function JoinedEventDetailsPage({
                         </p>
 
                         <Link
-                            href="/sign-in"
+                            href="/log-in"
                             className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
                         >
                             Register now
                             <Heart size={17} />
                         </Link>
 
-                        <p className="mt-3 text-center text-xs text-gray-400">
-                            Login required to register for this event.
+                        <p className="mt-3 text-center text-xs text-gray-400 dark:text-slate-500">
+                            Log in required to register for this event.
                         </p>
                     </div>
 
@@ -204,7 +204,7 @@ export default async function JoinedEventDetailsPage({
                                 <p className="text-sm font-medium text-gray-900 dark:text-white">
                                     {date}
                                 </p>
-                                <p className="text-xs text-gray-500">
+                                <p className="text-xs text-gray-500 dark:text-slate-400">
                                     {time}
                                     {endTime ? ` – ${endTime}` : ''}
                                 </p>
@@ -221,7 +221,7 @@ export default async function JoinedEventDetailsPage({
                                 <p className="text-sm font-medium text-gray-900 dark:text-white">
                                     Location
                                 </p>
-                                <p className="text-xs text-gray-500">
+                                <p className="text-xs text-gray-500 dark:text-slate-400">
                                     {event.location}
                                 </p>
                             </div>
@@ -237,7 +237,7 @@ export default async function JoinedEventDetailsPage({
                                 <p className="text-sm font-medium text-gray-900 dark:text-white">
                                     Public
                                 </p>
-                                <p className="text-xs text-gray-500">
+                                <p className="text-xs text-gray-500 dark:text-slate-400">
                                     Anyone can see this event.
                                 </p>
                             </div>
@@ -296,7 +296,7 @@ export default async function JoinedEventDetailsPage({
                                     Event Organizer
                                 </p>
 
-                                <p className="text-xs text-gray-500">
+                                <p className="text-xs text-gray-500 dark:text-slate-400">
                                     {event.createdByEmail ?? 'Community Organizer'}
                                 </p>
                             </div>
